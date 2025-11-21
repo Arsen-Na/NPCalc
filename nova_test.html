@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Калькулятор ціни</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:24px;background:#f7f7f8;color:#111}
+    .card{max-width:640px;margin:0 auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 6px 24px rgba(20,20,30,0.06)}
+    h1{margin:0 0 12px;font-size:20px}
+    label{display:block;margin-top:12px;font-weight:600}
+  input[type=number]{width:100%;min-width:0;box-sizing:border-box;padding:8px 10px;margin-top:6px;font-size:16px;border:1px solid #dcdde1;border-radius:6px}
+    .row{display:flex;gap:12px;}
+    .row > div{
+      flex:1;
+      background:#fff;
+      border:1.5px solid #e0e0e0;
+      border-radius:8px;
+      padding:12px 10px 4px 10px;
+      box-sizing:border-box;
+      box-shadow:0 2px 8px rgba(20,20,30,0.03);
+      min-width:0;
+    }
+    .result{margin-top:18px;padding:12px;background:#f0f8ff;border:1px solid #dbeefe;border-radius:6px}
+    .formula{font-family:monospace;background:#f4f4f6;padding:8px;border-radius:6px;display:inline-block}
+    .muted{color:#666;font-size:14px}
+    .note{margin-top:8px;color:#444}
+    footer{margin-top:18px;font-size:13px;color:#666}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Калькулятор об'ємної ваги</h1>
+    <p class="muted">Введіть розміри в сантиметрах та фактичну вагу в кілограмах.</p>
+
+    <div class="row">
+      <div>
+        <label for="length">Довжина (cm)</label>
+        <input id="length" type="number" inputmode="decimal" step="any" min="0" placeholder="Наприклад: 40">
+      </div>
+      <div>
+        <label for="width">Ширина (cm)</label>
+        <input id="width" type="number" inputmode="decimal" step="any" min="0" placeholder="Наприклад: 30">
+      </div>
+      <div>
+        <label for="height">Висота (cm)</label>
+        <input id="height" type="number" inputmode="decimal" step="any" min="0" placeholder="Наприклад: 20">
+      </div>
+    </div>
+
+    <label for="weight">Фактична вага (kg)</label>
+    <input id="weight" type="number" inputmode="decimal" step="any" min="0" placeholder="Наприклад: 2.5">
+
+    <label for="country">Країна одержувача</label>
+    <input id="country" list="countries" placeholder="Почніть вводити країну (наприклад: Polska)">
+    <datalist id="countries"></datalist>
+
+    <div class="result" aria-live="polite">
+  <div class="note">Формула: <span class="formula">(<span id="f-l">довжина</span> × <span id="f-w">ширина</span> × <span id="f-h">висота</span>) ÷ 4000</span></div>
+      <div style="margin-top:10px">
+        <strong>Об'ємна вага:</strong>
+        <span id="volumetric">—</span>
+        <span class="muted">kg</span>
+      </div>
+      <div style="margin-top:8px">
+        <strong>Платна вага (використовується):</strong>
+        <span id="billable">—</span>
+        <span class="muted">kg</span>
+      </div>
+      <div style="margin-top:8px">
+        <strong>Ціна:</strong>
+        <span id="price">—</span>
+        <span class="muted">PLN</span>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const lengthEl = document.getElementById('length');
+    const widthEl = document.getElementById('width');
+    const heightEl = document.getElementById('height');
+    const weightEl = document.getElementById('weight');
+    const volumetricEl = document.getElementById('volumetric');
+    const countryEl = document.getElementById('country');
+      const billableEl = document.getElementById('billable');
+      const priceEl = document.getElementById('price');
+    let ratesMap = {};
+    const fallbackRate = {s:100, m:150, over10:300, perKg:8};
+    // load rates and aliases from external JSON files
+    Promise.all([fetch('rates.json').then(r=>r.json()), fetch('rates_aliases.json').then(r=>r.json())])
+      .then(([arr, aliases]) => {
+        const list = document.getElementById('countries');
+        arr.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.country;
+          list.appendChild(opt);
+          ratesMap[item.country] = {
+            s: Number(item.s),
+            m: Number(item.m),
+            over10: Number(item.over10),
+            perKg: Number(item.perKg)
+          };
+        });
+
+        // build alias lookup (case-insensitive keys)
+        const aliasMap = {};
+        Object.keys(aliases).forEach(k => {
+          aliasMap[k.toLowerCase()] = aliases[k];
+        });
+
+        // helper to resolve a user-entered country string to canonical name
+        function resolveCountry(input) {
+          if (!input) return '';
+          const trimmed = input.trim();
+          if (ratesMap[trimmed]) return trimmed; // exact
+          // case-insensitive exact
+          const exactKey = Object.keys(ratesMap).find(c => c.toLowerCase() === trimmed.toLowerCase());
+          if (exactKey) return exactKey;
+          // aliases
+          const alias = aliasMap[trimmed.toLowerCase()];
+          if (alias && ratesMap[alias]) return alias;
+          return '';
+        }
+
+        // dynamic datalist filtering for country input
+        function updateCountryDatalist() {
+          const userInput = countryEl.value || '';
+          const filter = userInput.trim().toLowerCase();
+          // clear datalist
+          while (list.firstChild) list.removeChild(list.firstChild);
+          // collect all canonical names that match input or its synonym
+          const shown = new Set();
+          // 1. If input matches a synonym, show the canonical name
+          const resolved = resolveCountry(userInput);
+          if (resolved) {
+            shown.add(resolved);
+          }
+          // 2. Show all countries containing the input (case-insensitive)
+          Object.keys(ratesMap).forEach(cn => {
+            if (!filter || cn.toLowerCase().includes(filter)) {
+              shown.add(cn);
+            }
+          });
+          // 3. Show all canonical names for which any synonym matches the input
+          Object.keys(aliasMap).forEach(syn => {
+            if (syn.includes(filter)) {
+              const canon = aliasMap[syn];
+              if (ratesMap[canon]) shown.add(canon);
+            }
+          });
+          // Fill datalist
+          shown.forEach(cn => {
+            const opt = document.createElement('option');
+            opt.value = cn;
+            list.appendChild(opt);
+          });
+        }
+
+        countryEl.addEventListener('input', updateCountryDatalist);
+        // initial fill
+        updateCountryDatalist();
+
+        // override compute to use resolver
+        const originalCompute = compute;
+        compute = function(){
+          // run original compute logic up to selecting rates
+          const L = parseNumber(lengthEl);
+          const W = parseNumber(widthEl);
+          const H = parseNumber(heightEl);
+          const vol = (L * W * H) / 4000;
+          if (L===0 || W===0 || H===0) {
+            volumetricEl.textContent = '—';
+            billableEl.textContent = '—';
+            priceEl.textContent = '—';
+            return;
+          }
+          volumetricEl.textContent = formatNumber(vol);
+          const actual = parseNumber(weightEl);
+          const billable = Math.max(vol, actual);
+          billableEl.textContent = formatNumber(billable);
+
+          const userInput = countryEl.value || '';
+          const resolved = resolveCountry(userInput);
+          const r = ratesMap[resolved] || fallbackRate;
+
+          let price = 0;
+          if (billable <= 2) {
+            price = r.s;
+          } else if (billable <= 10) {
+            price = r.m;
+          } else {
+            price = r.over10 + (Math.ceil(billable) - 10) * r.perKg;
+          }
+          // round to 2 decimals
+          const priceText = (Math.round(price*100)/100).toFixed(2);
+
+          // breakdown when >10 kg
+          if (billable > 10) {
+            const base10 = (Math.round(r.over10*100)/100).toFixed(2);
+            const perKg = (Math.round(r.perKg*100)/100).toFixed(2);
+            priceEl.textContent = priceText + ` (ціна за 10 кг = ${base10}, і за кожен кг понад 10 = ${perKg})`;
+          } else {
+            priceEl.textContent = priceText;
+          }
+        };
+
+        // expose resolver for debugging if needed
+        window._resolveCountry = resolveCountry;
+
+        // prefill Polska if present
+        if (ratesMap['Polska']) countryEl.value = 'Polska';
+        compute();
+      })
+      .catch(err => {
+        console.warn('Could not load rates or aliases, using fallback rates', err);
+        // keep default compute behavior but enhance to show breakdown when >10
+        const oldCompute = compute;
+        compute = function(){
+          oldCompute();
+          const bill = parseFloat(billableEl.textContent.replace(',','.')) || 0;
+          if (bill > 10) {
+            // try to pick a rate if country matches exactly
+            const r = ratesMap[countryEl.value] || fallbackRate;
+            const base10 = (Math.round(r.over10*100)/100).toFixed(2);
+            const perKg = (Math.round(r.perKg*100)/100).toFixed(2);
+            priceEl.textContent = priceEl.textContent + ` (ціна за 10 кг = ${base10}, і за кожен кг понад 10 = ${perKg})`;
+          }
+        };
+        compute();
+      });
+
+    function parseNumber(el){
+      const v = parseFloat(el.value);
+      return Number.isFinite(v) ? v : 0;
+    }
+
+    function formatNumber(v){
+      return (Math.round(v * 100) / 100).toFixed(2);
+    }
+
+    function compute(){
+      const L = parseNumber(lengthEl);
+      const W = parseNumber(widthEl);
+      const H = parseNumber(heightEl);
+      const vol = (L * W * H) / 4000;
+      if (L===0 || W===0 || H===0) {
+        volumetricEl.textContent = '—';
+          billableEl.textContent = '—';
+          priceEl.textContent = '—';
+        return;
+      }
+      volumetricEl.textContent = formatNumber(vol);
+        const actual = parseNumber(weightEl);
+        const billable = Math.max(vol, actual);
+        billableEl.textContent = formatNumber(billable);
+
+        // use loaded rates if available; otherwise fallback
+        const country = countryEl.value || '';
+        const r = ratesMap[country] || fallbackRate;
+        let price = 0;
+        if (billable <= 2) {
+          price = r.s;
+        } else if (billable <= 10) {
+          price = r.m;
+        } else {
+          // for >10: use over10 base then add perKg for kilos above 10
+          price = r.over10 + (Math.ceil(billable) - 10) * r.perKg;
+        }
+        // round to 2 decimals
+        priceEl.textContent = (Math.round(price*100)/100).toFixed(2);
+    }
+
+    // always call the current compute() function (in case it gets replaced after async loads)
+    [lengthEl, widthEl, heightEl, weightEl, countryEl].forEach(el => el.addEventListener('input', () => compute()));
+
+    // update formula display with actual values
+    function updateFormulaFields() {
+      document.getElementById('f-l').textContent = lengthEl.value ? lengthEl.value : 'довжина';
+      document.getElementById('f-w').textContent = widthEl.value ? widthEl.value : 'ширина';
+      document.getElementById('f-h').textContent = heightEl.value ? heightEl.value : 'висота';
+    }
+    [lengthEl, widthEl, heightEl].forEach(el => el.addEventListener('input', updateFormulaFields));
+
+    // initial compute and formula update
+    compute();
+    updateFormulaFields();
+  </script>
+</body>
+</html>
