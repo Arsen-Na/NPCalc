@@ -25,6 +25,7 @@
       width: 100%; box-sizing: border-box;
       padding: 8px 10px; margin-top: 6px;
       font-size: 16px; border: 1px solid #dcdde1; border-radius: 6px;
+      background: #fff;
     }
     .row { display: flex; gap: 12px; flex-wrap: wrap; }
     .row > div {
@@ -87,14 +88,14 @@
     <input id="weight" type="number" step="any" min="0" placeholder="2.5">
 
     <!-- ПК -->
-    <label for="countryInput">Країна одержувача</label>
+    <label for="countryInput">Країна одержувача (ПК)</label>
     <input id="countryInput" list="countries" placeholder="Polska">
     <datalist id="countries"></datalist>
 
     <!-- Мобільний -->
-    <label for="countrySelect">Країна одержувача</label>
+    <label for="countrySelect">Країна одержувача (мобільний)</label>
     <select id="countrySelect">
-      <option value="" disabled selected>Оберіть країну...</option>
+      <option value="" disabled selected>Завантаження…</option>
     </select>
 
     <div class="result" aria-live="polite">
@@ -104,35 +105,91 @@
       <div><strong>Ціна:</strong> <span id="price">—</span> <span class="muted">PLN</span></div>
     </div>
   </main>
-  
+
   <script>
     const lengthEl = document.getElementById('length'),
           widthEl = document.getElementById('width'),
           heightEl = document.getElementById('height'),
           weightEl = document.getElementById('weight'),
           volumetricEl = document.getElementById('volumetric'),
-          countryEl = document.getElementById('country'),
           billableEl = document.getElementById('billable'),
-          priceEl = document.getElementById('price');
+          priceEl = document.getElementById('price'),
+          countryInput = document.getElementById('countryInput'),
+          countrySelect = document.getElementById('countrySelect'),
+          datalist = document.getElementById('countries');
 
     let ratesMap = {}, aliasMap = {};
     const fallbackRate = {s:100, m:150, over10:300, perKg:8};
 
-    Promise.all([
-      fetch('rates.json').then(r=>r.json()),
-      fetch('rates_aliases.json').then(r=>r.json())
-    ]).then(([arr, aliases]) => {
-      const list = document.getElementById('countries');
-      arr.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.country;
-        list.appendChild(opt);
-        ratesMap[item.country] = item;
-      });
-      Object.keys(aliases).forEach(k => aliasMap[k.toLowerCase()] = aliases[k]);
-      if (ratesMap['Polska']) countryEl.value = 'Polska';
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+      bindEvents();
+      updateFormulaFields();
       compute();
     });
+
+    function loadData(){
+      Promise.all([
+        fetch('./rates.json').then(r=>r.json()),
+        fetch('./rates_aliases.json').then(r=>r.json())
+      ]).then(([arr, aliases]) => {
+        // Заповнюємо datalist і select атомарно
+        const fragList = document.createDocumentFragment();
+        const fragSelect = document.createDocumentFragment();
+
+        arr.forEach(item => {
+          const o1 = document.createElement('option');
+          o1.value = item.country;
+          fragList.appendChild(o1);
+
+          const o2 = document.createElement('option');
+          o2.value = item.country;
+          o2.textContent = item.country;
+          fragSelect.appendChild(o2);
+
+          ratesMap[item.country] = item;
+        });
+
+        datalist.appendChild(fragList);
+
+        // Замінюємо заглушку лише після формування усіх опцій
+        countrySelect.innerHTML = '';
+        countrySelect.appendChild(fragSelect);
+
+        aliasMap = Object.keys(aliases).reduce((acc,k)=>{
+          acc[k.toLowerCase()] = aliases[k];
+          return acc;
+        },{});
+
+        // Префіл за замовчуванням, якщо є
+        if (ratesMap['Polska']) {
+          countryInput.value = 'Polska';
+          countrySelect.value = 'Polska';
+        } else {
+          // Інакше ставимо першу країну
+          const first = Object.keys(ratesMap)[0];
+          if (first) {
+            countryInput.value = first;
+            countrySelect.value = first;
+          }
+        }
+
+        compute();
+      }).catch(err => {
+        console.error('Помилка завантаження даних:', err);
+        // Показуємо зрозуміле повідомлення у select
+        countrySelect.innerHTML = '<option value="" disabled selected>Не вдалося завантажити дані</option>';
+        // Даємо можливість користуватися fallbackRate
+        compute();
+      });
+    }
+
+    function bindEvents(){
+      [lengthEl,widthEl,heightEl,weightEl,countryInput].forEach(el=>{
+        el.addEventListener('input', ()=>{ syncCountryToSelect(); updateFormulaFields(); compute(); });
+      });
+      countrySelect.addEventListener('change', ()=>{ syncSelectToInput(); compute(); });
+    }
 
     function resolveCountry(input) {
       if (!input) return '';
@@ -142,6 +199,17 @@
       if (exactKey) return exactKey;
       const alias = aliasMap[trimmed.toLowerCase()];
       return alias && ratesMap[alias] ? alias : '';
+    }
+
+    function syncCountryToSelect(){
+      const resolved = resolveCountry(countryInput.value);
+      if (resolved && countrySelect.value !== resolved) countrySelect.value = resolved;
+    }
+
+    function syncSelectToInput(){
+      if (countrySelect.value && countryInput.value !== countrySelect.value) {
+        countryInput.value = countrySelect.value;
+      }
     }
 
     function parseNumber(el){ const v = parseFloat(el.value); return Number.isFinite(v) ? v : 0; }
@@ -155,13 +223,12 @@
       const actual = parseNumber(weightEl), billable = Math.max(vol, actual);
       billableEl.textContent = formatNumber(billable);
 
-      const r = ratesMap[resolveCountry(countryEl.value)] || fallbackRate;
+      const userInput = countryInput.value || countrySelect.value || '';
+      const r = ratesMap[resolveCountry(userInput)] || fallbackRate;
       let price = billable<=2 ? r.s : billable<=10 ? r.m : r.over10 + (Math.ceil(billable)-10)*r.perKg;
       const priceText = formatNumber(price);
       priceEl.textContent = billable>10 ? `${priceText} (10 кг = ${r.over10}, понад 10 кг = ${r.perKg})` : priceText;
     }
-
-    [lengthEl,widthEl,heightEl,weightEl,countryEl].forEach(el=>el.addEventListener('input',()=>{compute();updateFormulaFields();}));
 
     function updateFormulaFields(){
       document.getElementById('f-l').textContent = lengthEl.value || 'довжина';
@@ -171,6 +238,3 @@
   </script>
 </body>
 </html>
-
-
-
