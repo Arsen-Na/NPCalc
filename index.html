@@ -12,7 +12,7 @@
       color: #111;
     }
     .card {
-      max-width: 640px;
+      max-width: 720px;
       margin: 0 auto;
       padding: 20px;
       background: #fff;
@@ -21,7 +21,7 @@
     }
     h1 { margin: 0 0 12px; font-size: 20px; }
     label { display: block; margin-top: 12px; font-weight: 600; }
-    input[type=number], input[list], select {
+    input[type=number] {
       width: 100%; box-sizing: border-box;
       padding: 8px 10px; margin-top: 6px;
       font-size: 16px; border: 1px solid #dcdde1; border-radius: 6px;
@@ -29,10 +29,10 @@
     }
     .row { display: flex; gap: 12px; flex-wrap: wrap; }
     .row > div {
-      flex: 1; min-width: 120px;
+      flex: 1; min-width: 140px;
       border: 1.5px solid #e0e0e0;
       border-radius: 8px;
-      padding: 12px 10px 4px;
+      padding: 12px 10px 8px;
       box-shadow: 0 2px 8px rgba(20,20,30,0.03);
     }
     .result {
@@ -47,20 +47,39 @@
     .muted { color: #666; font-size: 14px; }
     .note { margin-top: 8px; color: #444; }
 
-    /* ПК = datalist, мобільний = select */
-    #countrySelect, label[for=countrySelect] { display: none; }
-    #countryInput, label[for=countryInput] { display: block; }
-
-    @media (max-width: 768px) {
-      #countryInput, label[for=countryInput] { display: none; }
-      #countrySelect, label[for=countrySelect] { display: block; }
+    /* Кастомний селектор країни у стилі vue-select */
+    .vs__selected-options {
+      display: flex; align-items: center; gap: 8px;
+      border: 1px solid #dcdde1; border-radius: 6px;
+      padding: 6px 8px; background: #fff;
+      min-height: 40px;
+    }
+    .vs__selected .flex { display: inline-flex; align-items: center; gap: 6px; }
+    .vs__search {
+      flex: 1; border: none; outline: none; font-size: 16px; min-width: 80px;
+      background: transparent;
+    }
+    .vs__dropdown {
+      margin-top: 4px; border: 1px solid #dcdde1; border-radius: 6px;
+      background: #fff; max-height: 220px; overflow-y: auto;
+      list-style: none; padding: 4px 0;
+      box-shadow: 0 6px 24px rgba(20,20,30,0.08);
+    }
+    .vs__dropdown li {
+      padding: 8px 10px; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .vs__dropdown li:hover { background: #f5f7fa; }
+    .flag {
+      width: 20px; height: 14px; border: 1px solid #ddd; border-radius: 2px;
+      background: linear-gradient(#fff,#eee);
     }
 
     @media (max-width: 600px) {
       body { margin: 8px; }
       .card { padding: 12px; }
       h1 { font-size: 18px; }
-      input, select { font-size: 14px; }
+      input, .vs__search { font-size: 14px; }
     }
   </style>
 </head>
@@ -87,16 +106,24 @@
     <label for="weight">Фактична вага (kg)</label>
     <input id="weight" type="number" inputmode="decimal" pattern="[0-9]*" step="any" min="0" placeholder="2.5">
 
-    <!-- ПК -->
-    <label for="countryInput">Країна одержувача</label>
-    <input id="countryInput" list="countries" placeholder="Polska">
-    <datalist id="countries"></datalist>
-
-    <!-- Мобільний -->
-    <label for="countrySelect">Країна одержувача</label>
-    <select id="countrySelect">
-      <option value="" disabled selected>Завантаження…</option>
-    </select>
+    <label for="country-input">Країна одержувача</label>
+    <div class="vs__selected-options" id="country-wrapper">
+      <span class="vs__selected">
+        <div class="flex items-center leading-[25px] font-inter text-base whitespace-nowrap gap-1">
+          <span class="flag" id="country-flag" title="PL"></span>
+          <span class="text-black inline-block" id="country-display">Polska</span>
+        </div>
+      </span>
+      <input id="country-input"
+             aria-autocomplete="list"
+             aria-labelledby="vs__combobox"
+             aria-controls="vs__listbox"
+             type="search"
+             autocomplete="off"
+             class="vs__search"
+             placeholder="Почніть вводити країну…">
+    </div>
+    <ul id="vs__listbox" class="vs__dropdown" role="listbox" aria-label="Вибір країни"></ul>
 
     <div class="result" aria-live="polite">
       <div class="note">Формула: <span class="formula">(<span id="f-l">довжина</span> × <span id="f-w">ширина</span> × <span id="f-h">висота</span>) ÷ 4000</span></div>
@@ -113,12 +140,14 @@
           weightEl = document.getElementById('weight'),
           volumetricEl = document.getElementById('volumetric'),
           billableEl = document.getElementById('billable'),
-          priceEl = document.getElementById('price'),
-          countryInput = document.getElementById('countryInput'),
-          countrySelect = document.getElementById('countrySelect'),
-          datalist = document.getElementById('countries');
+          priceEl = document.getElementById('price');
 
-    let ratesMap = {}, aliasMap = {};
+    const countryInput = document.getElementById('country-input'),
+          countryDisplay = document.getElementById('country-display'),
+          countryFlag = document.getElementById('country-flag'),
+          dropdown = document.getElementById('vs__listbox');
+
+    let ratesMap = {}, aliasMap = {}, countries = [];
     const fallbackRate = {s:100, m:150, over10:300, perKg:8};
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -133,62 +162,67 @@
         fetch('./rates.json').then(r=>r.json()),
         fetch('./rates_aliases.json').then(r=>r.json())
       ]).then(([arr, aliases]) => {
-        // Заповнюємо datalist і select атомарно
-        const fragList = document.createDocumentFragment();
-        const fragSelect = document.createDocumentFragment();
-
-        arr.forEach(item => {
-          const o1 = document.createElement('option');
-          o1.value = item.country;
-          fragList.appendChild(o1);
-
-          const o2 = document.createElement('option');
-          o2.value = item.country;
-          o2.textContent = item.country;
-          fragSelect.appendChild(o2);
-
-          ratesMap[item.country] = item;
-        });
-
-        datalist.appendChild(fragList);
-
-        // Замінюємо заглушку лише після формування усіх опцій
-        countrySelect.innerHTML = '';
-        countrySelect.appendChild(fragSelect);
-
+        countries = arr.map(c=>c.country);
+        arr.forEach(item => { ratesMap[item.country] = item; });
         aliasMap = Object.keys(aliases).reduce((acc,k)=>{
           acc[k.toLowerCase()] = aliases[k];
           return acc;
         },{});
 
-        // Префіл за замовчуванням, якщо є
-        if (ratesMap['Polska']) {
-          countryInput.value = 'Polska';
-          countrySelect.value = 'Polska';
-        } else {
-          // Інакше ставимо першу країну
-          const first = Object.keys(ratesMap)[0];
-          if (first) {
-            countryInput.value = first;
-            countrySelect.value = first;
-          }
+        // Префіл Polska, якщо є, інакше перша країна
+        const initial = ratesMap['Polska'] ? 'Polska' : (countries[0] || '');
+        if (initial) {
+          countryDisplay.textContent = initial;
+          countryInput.value = initial;
+          updateFlag(initial);
         }
 
         compute();
       }).catch(err => {
         console.error('Помилка завантаження даних:', err);
-        // Показуємо зрозуміле повідомлення у select
-        countrySelect.innerHTML = '<option value="" disabled selected>Не вдалося завантажити дані</option>';
-        // Даємо можливість користуватися fallbackRate
+        dropdown.innerHTML = '<li style="color:#a00; padding:8px 10px;">Не вдалося завантажити країни</li>';
         compute();
       });
     }
 
     function bindEvents(){
-      [lengthEl,widthEl,heightEl,weightEl,countryInput].forEach(el=>{
-        el.addEventListener('input', ()=>{ syncCountryToSelect(); updateFormulaFields(); compute(); });
+      [lengthEl,widthEl,heightEl,weightEl].forEach(el=>{
+        el.addEventListener('input', ()=>{ updateFormulaFields(); compute(); });
       });
-      countrySelect.addEventListener('change', ()=>{ syncSelectToInput(); compute(); });
+
+      countryInput.addEventListener('input', handleCountryInput);
+      countryInput.addEventListener('focus', handleCountryInput);
+      document.addEventListener('click', (e)=>{
+        if (!e.target.closest('#country-wrapper')) dropdown.innerHTML = '';
+      });
+    }
+
+    function handleCountryInput(){
+      const val = countryInput.value.trim().toLowerCase();
+      dropdown.innerHTML = '';
+      if (!val) return;
+
+      const results = countries
+        .filter(c=>c.toLowerCase().includes(val))
+        .slice(0, 50);
+
+      if (!results.length) return;
+
+      const frag = document.createDocumentFragment();
+      results.forEach(c=>{
+        const li = document.createElement('li');
+        li.setAttribute('role','option');
+        li.innerHTML = `<span class="flag" title="${flagCode(c)}"></span><span>${c}</span>`;
+        li.addEventListener('click', ()=>{
+          countryDisplay.textContent = c;
+          countryInput.value = c;
+          updateFlag(c);
+          dropdown.innerHTML = '';
+          compute();
+        });
+        frag.appendChild(li);
+      });
+      dropdown.appendChild(frag);
     }
 
     function resolveCountry(input) {
@@ -201,15 +235,17 @@
       return alias && ratesMap[alias] ? alias : '';
     }
 
-    function syncCountryToSelect(){
-      const resolved = resolveCountry(countryInput.value);
-      if (resolved && countrySelect.value !== resolved) countrySelect.value = resolved;
+    function flagCode(name){
+      // Просте зіставлення для демо: беремо дволітерний код із відомих, інакше ініціали
+      const map = {
+        'Polska':'PL','Niemcy':'DE','Czechy':'CZ','Słowacja':'SK','Ukraina':'UA',
+        'Włochy':'IT','Francja':'FR','Hiszpania':'ES','Wielka Brytania':'GB','Stany Zjednoczone Ameryky':'US'
+      };
+      return map[name] || (name.slice(0,2).toUpperCase());
     }
 
-    function syncSelectToInput(){
-      if (countrySelect.value && countryInput.value !== countrySelect.value) {
-        countryInput.value = countrySelect.value;
-      }
+    function updateFlag(countryName){
+      countryFlag.title = flagCode(countryName);
     }
 
     function parseNumber(el){ const v = parseFloat(el.value); return Number.isFinite(v) ? v : 0; }
@@ -223,7 +259,7 @@
       const actual = parseNumber(weightEl), billable = Math.max(vol, actual);
       billableEl.textContent = formatNumber(billable);
 
-      const userInput = countryInput.value || countrySelect.value || '';
+      const userInput = countryInput.value || countryDisplay.textContent || '';
       const r = ratesMap[resolveCountry(userInput)] || fallbackRate;
       let price = billable<=2 ? r.s : billable<=10 ? r.m : r.over10 + (Math.ceil(billable)-10)*r.perKg;
       const priceText = formatNumber(price);
@@ -238,4 +274,3 @@
   </script>
 </body>
 </html>
-
