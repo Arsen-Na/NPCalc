@@ -31,7 +31,8 @@
 
     /* vertical centering inside .row columns (keeps existing look) */
     .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
-    .row > div { display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 84px; padding: 12px 10px 4px; }
+    /* removed display:flex from .row > div as requested; keep layout spacing */
+    .row > div { flex-direction: column; justify-content: center; gap: 8px; min-height: 84px; padding: 12px 10px 4px; }
 
     /* small helper for the new estimated value input to keep spacing consistent */
     .after-country { margin-top: 6px; }
@@ -145,6 +146,7 @@ const unitKg = document.getElementById('unit-kg');
 const unitKg2 = document.getElementById('unit-kg-2');
 const unitCurrency = document.getElementById('unit-currency');
 const labelDeclared = document.getElementById('label-declared');
+const formulaRow = document.getElementById('formula-row');
 
 const customsBlock = document.getElementById('customsBlock');
 const customsText = document.getElementById('customsText');
@@ -157,7 +159,8 @@ const T = {
     intro: "Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",
     length: 'Довжина (cm)', width: 'Ширина (cm)', height: 'Висота (cm)',
     weight: 'Фактична вага (kg)', country: "Країна одержувача",
-    mobilePlaceholder: 'Завантаження…', formula: { l: 'довжина', w: 'ширина', h: 'висота' },
+    mobilePlaceholder: 'Завантаження…', formulaWords: { l: 'довжина', w: 'ширина', h: 'висота' },
+    formulaLabel: 'Формула',
     volumetric: "Об'ємна вага:", billable: "Платна вага:", price: "Ціна:", unitKg: 'kg', currency: 'PLN',
     countryInputPlaceholder: 'Polska',
     declaredLabel: 'Оціночна вартість',
@@ -174,7 +177,8 @@ const T = {
     intro: "Enter dimensions in centimetres and actual weight in kilograms.",
     length: 'Length (cm)', width: 'Width (cm)', height: 'Height (cm)',
     weight: 'Actual weight (kg)', country: "Destination country",
-    mobilePlaceholder: 'Loading…', formula: { l: 'length', w: 'width', h: 'height' },
+    mobilePlaceholder: 'Loading…', formulaWords: { l: 'length', w: 'width', h: 'height' },
+    formulaLabel: 'Formula',
     volumetric: "Volumetric weight:", billable: "Billable weight:", price: "Price:", unitKg: 'kg', currency: 'PLN',
     countryInputPlaceholder: 'Poland',
     declaredLabel: 'Estimated value',
@@ -191,14 +195,15 @@ const T = {
     intro: "Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",
     length: 'Długość (cm)', width: 'Szerokość (cm)', height: 'Wysokość (cm)',
     weight: 'Rzeczywista waga (kg)', country: "Kraj odbiorcy",
-    mobilePlaceholder: 'Ładowanie…', formula: { l: 'długość', w: 'szerokość', h: 'wysokość' },
+    mobilePlaceholder: 'Ładowanie…', formulaWords: { l: 'długość', w: 'szerokość', h: 'wysokość' },
+    formulaLabel: 'Formuła',
     volumetric: "Waga objętościowa:", billable: "Waga obciążalna:", price: "Cena:", unitKg: 'kg', currency: 'PLN',
     countryInputPlaceholder: 'Polska',
     declaredLabel: 'Wartość szacunkowa',
     declaredPlaceholder: '0',
     per10: 'za 10 KG',
     perExtra: 'za każdy kolejny KG',
-    insuranceText: '0.5% "ubezpieczenie" od WŚ',
+    insuranceText: '0.5% "ubezpieczenie" od WS', // corrected WŚ -> WS
     andSeparator: ', ',
     customsTitle: 'Koszty opłat celnych wyniosą:',
     customsDetailFmt: (eur, uah, pln) => ` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`
@@ -268,11 +273,19 @@ function applyTranslations(lang){
   unitKg2.textContent = t.unitKg;
   unitCurrency.textContent = t.currency;
   countryInput.placeholder = t.countryInputPlaceholder;
-  fL.textContent = t.formula.l;
-  fW.textContent = t.formula.w;
-  fH.textContent = t.formula.h;
+  fL.textContent = t.formulaWords.l;
+  fW.textContent = t.formulaWords.w;
+  fH.textContent = t.formulaWords.h;
   labelDeclared.textContent = t.declaredLabel;
   declaredEl.placeholder = t.declaredPlaceholder;
+
+  // update formula block label + existing formula span
+  formulaRow.innerHTML = `${t.formulaLabel}: <span class="formula">(<span id="f-l">${t.formulaWords.l}</span> × <span id="f-w">${t.formulaWords.w}</span> × <span id="f-h">${t.formulaWords.h}</span>) ÷ 4000</span>`;
+  // rebind fL/fW/fH after innerHTML replacement
+  // (they are already referenced above; re-query to be safe)
+  window.fL = document.getElementById('f-l');
+  window.fW = document.getElementById('f-w');
+  window.fH = document.getElementById('f-h');
 }
 
 /* Load rates file for current language, populate countries & maps */
@@ -428,9 +441,11 @@ function hideCustoms(){
 
 /* Wire events */
 [lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(el=>el.addEventListener('input', debounce(()=> {
-  fL.textContent = lengthEl.value || T[htmlEl.lang].formula.l;
-  fW.textContent = widthEl.value || T[htmlEl.lang].formula.w;
-  fH.textContent = heightEl.value || T[htmlEl.lang].formula.h;
+  // update inline formula words (preserve current language words)
+  const t = T[htmlEl.lang] || T.uk;
+  if (window.fL) window.fL.textContent = lengthEl.value || t.formulaWords.l;
+  if (window.fW) window.fW.textContent = widthEl.value || t.formulaWords.w;
+  if (window.fH) window.fH.textContent = heightEl.value || t.formulaWords.h;
   compute();
 }, 120)));
 
