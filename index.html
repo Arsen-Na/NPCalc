@@ -28,6 +28,10 @@
     .customs{margin-top:12px;padding:12px;background:#fff7f0;border:1px solid #f2d9c4;border-radius:6px;color:#111}
     .warning{margin-top:12px;padding:12px;background:#ffecec;border:1px solid #f5c2c2;border-radius:6px;color:#611}
     .warning a{color:#522;text-decoration:underline}
+    .mode-row{margin:6px 0 12px}
+    .mode-toggle{display:flex;gap:8px;align-items:center}
+    .toggle-btn{padding:8px 12px;border-radius:999px;border:1px solid #dcdde1;background:#fff;cursor:pointer;font-weight:600}
+    .toggle-btn[aria-pressed="true"]{background:#0b76ff;color:#fff;border-color:#0b76ff}
   </style>
 </head>
 <body>
@@ -43,6 +47,17 @@
 
   <h1 id="title">Калькулятор ціни</h1>
   <p class="muted" id="intro">Введіть розміри в сантиметрах та фактичну вагу в кілограмах.</p>
+
+  <div class="mode-row" id="modeRow">
+    <div class="row" style="align-items:stretch">
+      <div style="flex:1">
+        <div class="mode-toggle" id="modeToggleWrap">
+          <button id="btnParcel" class="toggle-btn" aria-pressed="true">Посилка</button>
+          <button id="btnDocs" class="toggle-btn" aria-pressed="false">Документи</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row">
     <div>
@@ -102,17 +117,15 @@ const declaredEl=el('declaredValue');
 const customsBlock=el('customsBlock'), customsText=el('customsText'), customsDetails=el('customsDetails');
 const presenceWarning=el('presenceWarning');
 const unitKg=el('unit-kg'), unitKg2=el('unit-kg-2'), unitCurrency=el('unit-currency'), formulaRow=el('formula-row');
+const btnParcel=el('btnParcel'), btnDocs=el('btnDocs');
 
-const presenceCountries=[
-  'Україна','Молдова','Польща','Литва','Чехія','Румунія','Німеччина','Словаччина','Естонія','Латвія','Угорщина','Італія','Велика Британія','Іспанія','Франція','Австрія','Нідерланди'
-];
-
+const presenceCountries=['Україна','Молдова','Польща','Литва','Чехія','Румунія','Німеччина','Словаччина','Естонія','Латвія','Угорщина','Італія','Велика Британія','Іспанія','Франція','Австрія','Нідерланди'];
 const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
 
 const T={
- uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Завантаження…',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Оціночна вартість',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'Вартість митних платежів складе:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ' ,presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS'},
- en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Loading…',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Poland',declaredLabel:'Estimated value',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'Customs payments will be:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ' ,presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery'},
- pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Ładowanie…',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Wartość szacunkowa',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'Koszty opłat celnych wyniosą:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ' ,presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)'}
+ uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Завантаження…',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Оціночна вартість',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'Вартість митних платежів складе:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ' ,presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',mode:{parcel:'Посилка',docs:'Документи'}},
+ en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Loading…',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Poland',declaredLabel:'Estimated value',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'Customs payments will be:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ' ,presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',mode:{parcel:'Parcel',docs:'Documents'}},
+ pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Ładowanie…',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Wartość szacunkowa',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'Koszty opłat celnych wyniosą:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ' ,presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',mode:{parcel:'Paczka',docs:'Dokumenty'} }
 };
 
 let countries=[],ratesMap={},aliasMap={};
@@ -138,6 +151,7 @@ function applyTranslations(lang){
   unitKg.textContent=t.unitKg;unitKg2.textContent=t.unitKg;unitCurrency.textContent=t.currency;
   countryInput.placeholder=t.countryInputPlaceholder;fL.textContent=t.formulaWords.l;fW.textContent=t.formulaWords.w;fH.textContent=t.formulaWords.h;
   el('label-declared').textContent=t.declaredLabel;declaredEl.placeholder=t.declaredPlaceholder;
+  btnParcel.textContent=t.mode.parcel;btnDocs.textContent=t.mode.docs;
   formulaRow.innerHTML=`${t.formulaLabel}: <span class="formula">(<span id="f-l">${t.formulaWords.l}</span> × <span id="f-w">${t.formulaWords.w}</span> × <span id="f-h">${t.formulaWords.h}</span>) ÷ 4000</span>`;
   fL=document.getElementById('f-l');fW=document.getElementById('f-w');fH=document.getElementById('f-h');
 }
@@ -164,6 +178,22 @@ function resolveCountry(input){if(!input)return'';if(ratesMap[input])return inpu
 function syncCountryToSelect(){const r=resolveCountry(countryInput.value);if(r)countrySelect.value=r;}
 function syncSelectToInput(){if(countrySelect.value)countryInput.value=countrySelect.value;}
 
+let sendMode='parcel';
+
+function setMode(mode){
+  sendMode=mode;
+  const docsFixed={length:35,width:25,height:2,weight:1};
+  if(mode==='docs'){
+    lengthEl.value=docsFixed.length;widthEl.value=docsFixed.width;heightEl.value=docsFixed.height;weightEl.value=docsFixed.weight;
+    [lengthEl,widthEl,heightEl,weightEl].forEach(i=>{i.readOnly=true;i.tabIndex=-1;i.setAttribute('aria-disabled','true');});
+    btnDocs.setAttribute('aria-pressed','true');btnParcel.setAttribute('aria-pressed','false');
+  }else{
+    [lengthEl,widthEl,heightEl,weightEl].forEach(i=>{i.readOnly=false;i.removeAttribute('tabIndex');i.removeAttribute('aria-disabled');});
+    btnDocs.setAttribute('aria-pressed','false');btnParcel.setAttribute('aria-pressed','true');
+  }
+  compute();
+}
+
 async function compute(){
   const t=T[htmlEl.lang]||T.uk;
   const L=parseNumber(lengthEl),W=parseNumber(widthEl),H=parseNumber(heightEl);
@@ -172,7 +202,11 @@ async function compute(){
   const actual=parseNumber(weightEl),billable=Math.max(vol,actual);billableEl.textContent=formatNumber(billable);
   const userInput=countryInput.value||countrySelect.value||'';const r=ratesMap[resolveCountry(userInput)]||fallbackRate;
   let basePrice,priceFor10kg=null,perExtraKg=null;
-  if(billable<=2)basePrice=r.s;else if(billable<=10)basePrice=r.m;else{priceFor10kg=r.over10;perExtraKg=r.perKg;basePrice=r.over10+(Math.ceil(billable)-10)*r.perKg;}
+  if(sendMode==='docs' && r && typeof r.docs!=='undefined'){
+    basePrice = Number(r.docs);
+  } else {
+    if(billable<=2)basePrice=r.s;else if(billable<=10)basePrice=r.m;else{priceFor10kg=r.over10;perExtraKg=r.perKg;basePrice=r.over10+(Math.ceil(billable)-10)*r.perKg;}
+  }
   const declared=parseNumber(declaredEl);
   let surcharge=0,surchargeShown=0;if(declared>=1000){surcharge=declared*0.005;surchargeShown=surcharge;}
   const total=basePrice+surcharge;
@@ -201,43 +235,26 @@ async function compute(){
   } else hideCustoms();
 
   const inPresence = destResolved && presenceCountries.some(pc=>pc.toLowerCase()===destResolved.toLowerCase());
-  if(!inPresence){
-    showWarning(t);
-  } else hideWarning();
+  if(!inPresence) showWarning(t); else hideWarning();
 }
 
 function hideCustoms(){customsBlock.style.display='none';customsText.textContent='';customsDetails.textContent='';}
-function showWarning(t){
-  presenceWarning.style.display='block';
-  presenceWarning.innerHTML = `${t.presenceNotice}<a href="${noticeLink}" target="_blank" rel="noopener noreferrer">${t.presenceLinkText}</a>`;
-}
+function showWarning(t){presenceWarning.style.display='block';presenceWarning.innerHTML = `${t.presenceNotice}<a href="${noticeLink}" target="_blank" rel="noopener noreferrer">${t.presenceLinkText}</a>`;}
 function hideWarning(){presenceWarning.style.display='none';presenceWarning.innerHTML='';}
 
-[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(el=>el.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk;if(fL)fL.textContent=lengthEl.value||t.formulaWords.l;if(fW)fW.textContent=widthEl.value||t.formulaWords.w;if(fH)fH.textContent=heightEl.value||t.formulaWords.h;compute();},120)));
+[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(i=>i.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk;if(fL)fL.textContent=lengthEl.value||t.formulaWords.l;if(fW)fW.textContent=widthEl.value||t.formulaWords.w;if(fH)fH.textContent=heightEl.value||t.formulaWords.h;compute();},120)));
 countryInput.addEventListener('input',debounce(()=>{syncCountryToSelect();compute();},120));
 countryInput.addEventListener('change',()=>{syncCountryToSelect();compute();});
 countrySelect.addEventListener('change',()=>{syncSelectToInput();compute();});
 
-(function desktopDropdown(){
-  const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);if(isMobile)return;
-  const wrapper=countryInput.parentElement;wrapper.style.position=wrapper.style.position||'relative';
-  const dropdown=document.createElement('ul');dropdown.className='dropdown';dropdown.hidden=true;wrapper.appendChild(dropdown);
-  let items=[],highlighted=-1,MAX_SHOW=200;
-  const render=arr=>{dropdown.innerHTML='';if(!arr||!arr.length){dropdown.hidden=true;return;}const frag=document.createDocumentFragment();arr.forEach((name,i)=>{const li=document.createElement('li');li.textContent=name;li.dataset.index=i;li.addEventListener('mousedown',e=>e.preventDefault());li.addEventListener('click',()=>{countryInput.value=name;dropdown.hidden=true;syncCountryToSelect();compute();});frag.appendChild(li);});dropdown.appendChild(frag);dropdown.hidden=false;highlighted=-1;};
-  const showMatches=q=>{const qn=normalize(q===undefined?countryInput.value:q);let res=[];if(!qn)res=countries.slice(0,MAX_SHOW);else{const seen=new Set();for(const c of countries){const lc=c.toLowerCase();if(lc.startsWith(qn)&&!seen.has(lc)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW)break;}}if(res.length<MAX_SHOW)for(const c of countries){const lc=c.toLowerCase();if(!seen.has(lc)&&lc.includes(qn)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW)break;}}}items=res;render(res);};
-  const debouncedShow=debounce(showMatches,120);
-  countryInput.addEventListener('focus',()=>showMatches());
-  countryInput.addEventListener('click',e=>{e.stopPropagation();showMatches();});
-  countryInput.addEventListener('input',()=>debouncedShow(countryInput.value));
-  countryInput.addEventListener('keydown',e=>{if(dropdown.hidden)return;const lis=dropdown.querySelectorAll('li');if(!lis.length)return;if(e.key==='ArrowDown'){e.preventDefault();highlighted=Math.min(highlighted+1,lis.length-1);updateHighlight(lis);}else if(e.key==='ArrowUp'){e.preventDefault();highlighted=Math.max(highlighted-1,0);updateHighlight(lis);}else if(e.key==='Enter'){e.preventDefault();const sel=lis[highlighted]||lis[0];if(sel){countryInput.value=sel.textContent;dropdown.hidden=true;syncCountryToSelect();compute();}}else if(e.key==='Escape'){dropdown.hidden=true;highlighted=-1;}});
-  function updateHighlight(lis){lis.forEach(li=>li.removeAttribute('aria-selected'));if(highlighted>=0&&lis[highlighted]){lis[highlighted].setAttribute('aria-selected','true');lis[highlighted].scrollIntoView({block:'nearest'});}}
-  document.addEventListener('click',e=>{if(!e.target.closest(wrapper))dropdown.hidden=true;});
-  window.addEventListener('resize',()=>{if(!dropdown.hidden)showMatches();});
-})();
+(function desktopDropdown(){const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);if(isMobile)return;const wrapper=countryInput.parentElement;wrapper.style.position=wrapper.style.position||'relative';const dropdown=document.createElement('ul');dropdown.className='dropdown';dropdown.hidden=true;wrapper.appendChild(dropdown);let items=[],highlighted=-1,MAX_SHOW=200;const render=arr=>{dropdown.innerHTML='';if(!arr||!arr.length){dropdown.hidden=true;return;}const frag=document.createDocumentFragment();arr.forEach((name,i)=>{const li=document.createElement('li');li.textContent=name;li.dataset.index=i;li.addEventListener('mousedown',e=>e.preventDefault());li.addEventListener('click',()=>{countryInput.value=name;dropdown.hidden=true;syncCountryToSelect();compute();});frag.appendChild(li);});dropdown.appendChild(frag);dropdown.hidden=false;highlighted=-1;};const showMatches=q=>{const qn=normalize(q===undefined?countryInput.value:q);let res=[];if(!qn)res=countries.slice(0,MAX_SHOW);else{const seen=new Set();for(const c of countries){const lc=c.toLowerCase();if(lc.startsWith(qn)&&!seen.has(lc)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW)break;}}if(res.length<MAX_SHOW)for(const c of countries){const lc=c.toLowerCase();if(!seen.has(lc)&&lc.includes(qn)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW)break;}}}items=res;render(res);};const debouncedShow=debounce(showMatches,120);countryInput.addEventListener('focus',()=>showMatches());countryInput.addEventListener('click',e=>{e.stopPropagation();showMatches();});countryInput.addEventListener('input',()=>debouncedShow(countryInput.value));countryInput.addEventListener('keydown',e=>{if(dropdown.hidden)return;const lis=dropdown.querySelectorAll('li');if(!lis.length)return;if(e.key==='ArrowDown'){e.preventDefault();highlighted=Math.min(highlighted+1,lis.length-1);updateHighlight(lis);}else if(e.key==='ArrowUp'){e.preventDefault();highlighted=Math.max(highlighted-1,0);updateHighlight(lis);}else if(e.key==='Enter'){e.preventDefault();const sel=lis[highlighted]||lis[0];if(sel){countryInput.value=sel.textContent;dropdown.hidden=true;syncCountryToSelect();compute();}}else if(e.key==='Escape'){dropdown.hidden=true;highlighted=-1;}});function updateHighlight(lis){lis.forEach(li=>li.removeAttribute('aria-selected'));if(highlighted>=0&&lis[highlighted]){lis[highlighted].setAttribute('aria-selected','true');lis[highlighted].scrollIntoView({block:'nearest'});}}document.addEventListener('click',e=>{if(!e.target.closest(wrapper))dropdown.hidden=true;});window.addEventListener('resize',()=>{if(!dropdown.hidden)showMatches();});})();
+
+btnParcel.addEventListener('click',()=>setMode('parcel'));
+btnDocs.addEventListener('click',()=>setMode('docs'));
 
 langSelect.addEventListener('change',async(e)=>{const lang=e.target.value;applyTranslations(lang);await loadRatesForLang(lang);});
 
-document.addEventListener('DOMContentLoaded',()=>{const defaultLang=langSelect.value||'uk';applyTranslations(defaultLang);if(window.matchMedia&&window.matchMedia('(max-width:768px)').matches){countryInput.style.display='none';el('label-country').style.display='none';countrySelect.style.display='block';el('label-countrySelect').style.display='block';}else{countrySelect.style.display='none';el('label-countrySelect').style.display='none';}loadRatesForLang(defaultLang);});
+document.addEventListener('DOMContentLoaded',()=>{const defaultLang=langSelect.value||'uk';applyTranslations(defaultLang);if(window.matchMedia&&window.matchMedia('(max-width:768px)').matches){countryInput.style.display='none';el('label-country').style.display='none';countrySelect.style.display='block';el('label-countrySelect').style.display='block';}else{countrySelect.style.display='none';el('label-countrySelect').style.display='none';}loadRatesForLang(defaultLang);setMode('parcel');});
 </script>
 </body>
 </html>
