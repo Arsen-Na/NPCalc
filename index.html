@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="uk">
 <head>
@@ -135,7 +134,7 @@ const unitKg2 = document.getElementById('unit-kg-2');
 const unitCurrency = document.getElementById('unit-currency');
 const labelDeclared = document.getElementById('label-declared');
 
-/* Translations */
+/* Translations and small text pieces for price breakdown */
 const T = {
   uk: {
     langLabel: 'Мова', title: 'Калькулятор ціни',
@@ -146,7 +145,12 @@ const T = {
     volumetric: "Об'ємна вага:", billable: "Платна вага:", price: "Ціна:", unitKg: 'kg', currency: 'PLN',
     countryInputPlaceholder: 'Polska',
     declaredLabel: 'Оціночна вартість',
-    declaredPlaceholder: '0'
+    declaredPlaceholder: '0',
+    // pieces for price line
+    per10: 'за 10 КГ',
+    perExtra: 'за кожен наступний КГ',
+    insuranceText: '0.5% "страхування" від ОВ',
+    andSeparator: ', '
   },
   en: {
     langLabel: 'Language', title: 'Price calculator',
@@ -157,7 +161,11 @@ const T = {
     volumetric: "Volumetric weight:", billable: "Billable weight:", price: "Price:", unitKg: 'kg', currency: 'PLN',
     countryInputPlaceholder: 'Poland',
     declaredLabel: 'Estimated value',
-    declaredPlaceholder: '0'
+    declaredPlaceholder: '0',
+    per10: 'for 10 KG',
+    perExtra: 'for each next KG',
+    insuranceText: '0.5% "insurance" of EV',
+    andSeparator: ', '
   },
   pl: {
     langLabel: 'Język', title: 'Kalkulator ceny',
@@ -168,7 +176,11 @@ const T = {
     volumetric: "Waga objętościowa:", billable: "Waga obciążalna:", price: "Cena:", unitKg: 'kg', currency: 'PLN',
     countryInputPlaceholder: 'Polska',
     declaredLabel: 'Wartość szacunkowa',
-    declaredPlaceholder: '0'
+    declaredPlaceholder: '0',
+    per10: 'za 10 KG',
+    perExtra: 'za każdy kolejny KG',
+    insuranceText: '0.5% "ubezpieczenie" od WŚ',
+    andSeparator: ', '
   }
 };
 
@@ -279,7 +291,10 @@ function syncCountryToSelect(){ const r = resolveCountry(countryInput.value); if
 function syncSelectToInput(){ if (countrySelect.value) countryInput.value = countrySelect.value; }
 
 /* Compute price (with declared value surcharge if >= 1000 PLN: +0.5% of declared) */
+/* Modified to render detailed price line per user's spec and translations */
 function compute(){
+  const t = T[htmlEl.lang] || T.uk;
+
   const L = parseNumber(lengthEl), W = parseNumber(widthEl), H = parseNumber(heightEl);
   if (!L || !W || !H){ volumetricEl.textContent = billableEl.textContent = priceEl.textContent = '—'; return; }
   const vol = (L*W*H)/4000;
@@ -288,24 +303,64 @@ function compute(){
   billableEl.textContent = formatNumber(billable);
   const userInput = countryInput.value || countrySelect.value || '';
   const r = ratesMap[resolveCountry(userInput)] || fallbackRate;
-  let basePrice;
-  if (billable <= 2) basePrice = r.s;
-  else if (billable <= 10) basePrice = r.m;
-  else basePrice = r.over10 + (Math.ceil(billable)-10) * r.perKg;
+
+  // base price according to table
+  let basePrice, priceFor10kg = null, perExtraKg = null;
+  if (billable <= 2) {
+    basePrice = r.s;
+  } else if (billable <= 10) {
+    basePrice = r.m;
+    // still provide Y (10 kg price) only if billable > 10 per spec - so leave null
+  } else {
+    // billable > 10
+    priceFor10kg = r.over10;
+    perExtraKg = r.perKg;
+    basePrice = r.over10 + (Math.ceil(billable) - 10) * r.perKg;
+  }
 
   // declared value surcharge logic
   const declared = parseNumber(declaredEl);
   let surcharge = 0;
+  let surchargeShown = 0;
   if (declared >= 1000) {
     surcharge = declared * 0.005; // 0.5%
+    surchargeShown = surcharge;
   }
 
   const total = basePrice + surcharge;
+
+  // Build detailed price text according to user's requested format and conditions
+  // Format: X PLN (Y за 10 КГ, Z за кожен наступний КГ, A 0.5% "страхування" від ОВ)
+  // Only include each segment if relevant per conditions:
+  // - Y and Z appear only when volumetric or actual weight exceed 10kg (we check billable > 10)
+  // - A appears only when declared >= 1000
+  const parts = [];
+
+  // If billable > 10, include Y and Z pieces
   if (billable > 10) {
-    priceEl.textContent = `${formatNumber(total)} (10 kg = ${r.over10}, per extra kg = ${r.perKg})`;
-  } else {
-    priceEl.textContent = formatNumber(total);
+    // Y: price for 10 kg according to table
+    if (priceFor10kg == null) {
+      // price for 10 kg is r.over10 (table defines over10 as price for 10 kg bucket)
+      priceFor10kg = r.over10;
+    }
+    parts.push(`${priceFor10kg} ${t.per10}`);
+    // Z: per extra kg
+    parts.push(`${perExtraKg} ${t.perExtra}`);
   }
+
+  // If declared >= 1000, include A piece (surcharge amount)
+  if (surchargeShown > 0) {
+    parts.push(`${formatNumber(surchargeShown)} ${t.insuranceText}`);
+  }
+
+  // Join parts with localized separator
+  const inside = parts.length ? ` (${parts.join(t.andSeparator)})` : '';
+
+  // Final X with currency and append inside
+  const finalText = `${formatNumber(total)} PLN${inside}`;
+
+  // Set price output
+  priceEl.textContent = finalText;
 }
 
 /* Wire events */
@@ -409,4 +464,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
-```
