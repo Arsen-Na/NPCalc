@@ -31,7 +31,7 @@
 
     /* vertical centering inside .row columns (keeps existing look) */
     .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
-    .row > div { display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 84px; padding: 12px 10px 4px; }
+    .row > div { flex-direction: column; justify-content: center; gap: 8px; min-height: 84px; padding: 12px 10px 4px; }
 
     /* small helper for the new estimated value input to keep spacing consistent */
     .after-country { margin-top: 6px; }
@@ -179,7 +179,7 @@ const T = {
     declaredPlaceholder: '0',
     per10: 'za 10 KG',
     perExtra: 'za każdy kolejny KG',
-    insuranceText: '0.5% "ubezpieczenie" od WŚ',
+    insuranceText: '0.5% "ubezpieczenie" od WS',
     andSeparator: ', '
   }
 };
@@ -464,3 +464,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
+
