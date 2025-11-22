@@ -118,7 +118,7 @@
   {"country":"Mauritius","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
   {"country":"Meksyk","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
   {"country":"Mikronezja","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
-  {"country":"Mołdawia","docs":60,"s":100,"m":140,"over10":140,"perKg":4},
+  {"country":"Mołdawia","docs":50,"s":60,"m":75,"over10":75,"perKg":4},
   {"country":"Monako","docs":60,"s":100,"m":140,"over10":140,"perKg":4},
   {"country":"Mongolia","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
   {"country":"Montserrat","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
@@ -201,3 +201,4 @@
   {"country":"Zambia","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
   {"country":"Zjednoczone Emiraty Arabskie","docs":100,"s":150,"m":300,"over10":300,"perKg":8}
 ]
+
