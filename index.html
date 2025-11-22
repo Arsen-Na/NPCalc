@@ -10,7 +10,7 @@
     h1{margin:0 0 12px;font-size:20px} label{display:block;margin-top:12px;font-weight:600}
     input[type=number], select, .country-input{width:100%;box-sizing:border-box;padding:8px 10px;margin-top:6px;font-size:16px;border:1px solid #dcdde1;border-radius:8px;background:#fff;height:56px}
     .row{display:flex;gap:12px;flex-wrap:wrap}
-    .row>div{flex:1;min-width:120px;border:1.5px solid #e0e0e0;border-radius:8px;padding:12px 10px 4px;box-shadow:0 2px 8px rgba(20,20,30,0.03);display:flex;flex-direction:column;justify-content:center;min-height:84px}
+    .row>div{flex:1;min-width:120px;border:1.5px solid #e0e0e0;border-radius:8px;padding:12px 10px 12px;box-shadow:0 2px 8px rgba(20,20,30,0.03);display:flex;flex-direction:column;justify-content:center;min-height:84px}
     .result{margin-top:18px;padding:12px;background:#f0f8ff;border:1px solid #dbeefe;border-radius:6px}
     .formula{font-family:monospace;background:#f4f4f6;padding:6px;border-radius:6px;display:inline-block}
     .muted{color:#666;font-size:14px}.note{margin-top:8px;color:#444}
@@ -28,13 +28,13 @@
     .warning a{color:#522;text-decoration:underline}
     .mode-row{margin:6px 0 12px}
     .mode-block{display:flex;gap:12px;align-items:stretch}
-    .mode-cell{flex:1;border:1.5px solid #e0e0e0;border-radius:8px;overflow:hidden;min-height:84px;display:flex}
+    .mode-cell{flex:1;border:1.5px solid #e0e0e0;border-radius:8px;overflow:hidden;min-height:42px;display:flex}
     .mode-toggle{display:flex;width:100%}
-    .mode-btn{flex:1;border:0;background:#fff;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;height:100%;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease}
+    .mode-btn{flex:1;border:0;background:#fff;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;height:100%;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease,filter .12s ease}
     .mode-btn + .mode-btn{border-left:1px solid rgba(0,0,0,0.06)}
     .mode-btn:hover{background:rgba(0,0,0,0.04)}
     .mode-btn:active{transform:translateY(1px)}
-    .mode-btn.active{background:#0b76ff;color:#fff;box-shadow:inset 0 -4px 12px rgba(0,0,0,0.06);filter:brightness(.95)}
+    .mode-btn.active{background:#0b76ff;color:#fff;box-shadow:inset 0 -4px 12px rgba(0,0,0,0.06);filter:brightness(.92)}
     .mode-btn:focus{outline:3px solid rgba(11,118,255,0.14);outline-offset:-3px}
   </style>
 </head>
@@ -126,9 +126,9 @@ const btnParcel=el('btnParcel'), btnDocs=el('btnDocs');
 const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
 
 const T={
- uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'0.5% "страхування" від ОВ',andSeparator:', ',customsTitle:'Вартість митних платежів складе:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',mode:{parcel:'Посилка',docs:'Документи'}},
- en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'0.5% "insurance" of EV',andSeparator:', ',customsTitle:'Customs payments will be:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',mode:{parcel:'Parcel',docs:'Documents'}},
- pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'0.5% "ubezpieczenie" od WS',andSeparator:', ',customsTitle:'Koszty opłat celnych wyniosą:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',mode:{parcel:'Paczka',docs:'Dokumenty'} }
+ uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'це 0.5% "страхування" від ОВ',andSeparator:', ',customsTitle:'Вартість митних платежів складе:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',mode:{parcel:'Посилка',docs:'Документи'}},
+ en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'is 0.5% "insurance" of EV',andSeparator:', ',customsTitle:'Customs payments will be:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',mode:{parcel:'Parcel',docs:'Documents'}},
+ pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'to 0.5% "ubezpieczenie" od WS',andSeparator:', ',customsTitle:'Koszty opłat celnych wyniosą:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',mode:{parcel:'Paczka',docs:'Dokumenty'} }
 };
 
 let countries=[],ratesMap={},aliasMap={};
@@ -222,7 +222,6 @@ function syncCountryToSelect(){ const r = resolveCountry(countryInput.value); if
 function syncSelectToInput(){ if(countrySelect.value) countryInput.value = countrySelect.value; }
 
 let sendMode='parcel';
-
 function updateModeButtonVisuals(){
   const activeClass='active';
   if(btnParcel && btnDocs){
