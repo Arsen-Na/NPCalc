@@ -119,8 +119,6 @@ const presenceWarning=el('presenceWarning');
 const unitKg=el('unit-kg'), unitKg2=el('unit-kg-2'), unitCurrency=el('unit-currency'), formulaRow=el('formula-row');
 const btnParcel=el('btnParcel'), btnDocs=el('btnDocs');
 
-const presenceCountries=['Україна','Молдова','Польща','Литва','Чехія','Румунія','Німеччина','Словаччина','Естонія','Латвія','Угорщина','Італія','Велика Британія','Іспанія','Франція','Австрія','Нідерланди'];
-const presenceCountriesNorm = presenceCountries.map(c=>c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
 const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
 
 const T={
@@ -130,6 +128,7 @@ const T={
 };
 
 let countries=[],ratesMap={},aliasMap={};
+let presenceCountriesAllNames = [];
 const fallbackRate={s:100,m:150,over10:300,perKg:8};
 
 const debounce=(fn,ms=120)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
@@ -167,21 +166,42 @@ function applyTranslations(lang){
   fL=document.getElementById('f-l'); fW=document.getElementById('f-w'); fH=document.getElementById('f-h');
 }
 
+async function loadPresenceCountries(){
+  try{
+    const res = await fetch('./presence_countries.json');
+    if(!res.ok) throw 0;
+    const data = await res.json();
+    presenceCountriesAllNames = data.map(item => [
+      String(item.uk||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''),
+      String(item.pl||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''),
+      String(item.en||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    ]);
+  }catch(e){
+    const fallback=[
+      ['україна','ukraina','ukraine'],['молдова','mołdawa','moldova'],['польща','polska','poland'],['литва','litwa','lithuania'],
+      ['чехія','czechy','czechia'],['румунія','rumunia','romania'],['німеччина','niemcy','germany'],['словаччина','słowacja','slovakia'],
+      ['естонія','estonia','estonia'],['латвія','łotwa','latvia'],['угорщина','węgry','hungary'],['італія','włochy','italy'],
+      ['велика британія','wielka brytania','united kingdom'],['іспанія','hiszpania','spain'],['франція','francja','france'],['австрія','austria','austria'],['нідерланди','holandia','netherlands']
+    ];
+    presenceCountriesAllNames = fallback;
+  }
+}
+
 async function loadRatesForLang(lang){
   const file=ratesFileForLang(lang);
   countries=[];ratesMap={};aliasMap={};
   try{
-    const res=await fetch(file); if(!res.ok) throw 0;
+    const res=await fetch(file);if(!res.ok)throw 0;
     const data=await res.json();
-    data.forEach(item=>{const name=item.country; countries.push(name); ratesMap[name]=item; });
-    try{const aRes=await fetch(file.replace('.json','_aliases.json')); if(aRes.ok){const aData=await aRes.json(); Object.keys(aData).forEach(k=>aliasMap[k.toLowerCase()]=aData[k]);}}catch(e){}
+    data.forEach(item=>{const name=item.country;countries.push(name);ratesMap[name]=item;});
+    try{const aRes=await fetch(file.replace('.json','_aliases.json'));if(aRes.ok){const aData=await aRes.json();Object.keys(aData).forEach(k=>aliasMap[k.toLowerCase()]=aData[k]);}}catch(e){}
     populateCountrySelects();
     countryInput.value=''; countrySelect.value='';
-  }catch(e){countrySelect.innerHTML='<option value="" disabled selected>Not available</option>'; countries=[]; ratesMap={};}
+  }catch(e){countrySelect.innerHTML='<option value="" disabled selected>Not available</option>';countries=[];ratesMap={};}
   finally{compute();}
 }
 
-function populateCountrySelects(){countrySelect.innerHTML=''; const frag=document.createDocumentFragment(); countries.forEach(name=>{const o=document.createElement('option'); o.value=name; o.textContent=name; frag.appendChild(o);}); countrySelect.appendChild(frag);}
+function populateCountrySelects(){countrySelect.innerHTML='';const frag=document.createDocumentFragment();countries.forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name;frag.appendChild(o);});countrySelect.appendChild(frag);}
 
 function resolveCountry(input){
   if(!input) return '';
@@ -197,6 +217,7 @@ function syncCountryToSelect(){ const r = resolveCountry(countryInput.value); if
 function syncSelectToInput(){ if(countrySelect.value) countryInput.value = countrySelect.value; }
 
 let sendMode='parcel';
+
 function setMode(mode){
   sendMode=mode;
   const docsFixed={length:35,width:25,height:2,weight:1};
@@ -257,7 +278,7 @@ async function compute(){
   } else hideCustoms();
 
   const destNorm = normalize(destResolved);
-  const inPresence = destResolved && presenceCountriesNorm.includes(destNorm);
+  const inPresence = destResolved && presenceCountriesAllNames.some(arr => arr.includes(destNorm));
   if(destResolved && !inPresence) showWarning(t); else hideWarning();
 }
 
@@ -292,7 +313,7 @@ btnDocs.addEventListener('click',()=>setMode('docs'));
 
 langSelect.addEventListener('change',async(e)=>{ const lang=e.target.value; applyTranslations(lang); await loadRatesForLang(lang); });
 
-document.addEventListener('DOMContentLoaded',()=>{ const defaultLang = langSelect.value || 'uk'; applyTranslations(defaultLang); if(window.matchMedia && window.matchMedia('(max-width:768px)').matches){ countryInput.style.display='none'; el('label-country').style.display='none'; countrySelect.style.display='block'; el('label-countrySelect').style.display='block'; } else { countrySelect.style.display='none'; el('label-countrySelect').style.display='none'; } loadRatesForLang(defaultLang); setMode('parcel'); });
+document.addEventListener('DOMContentLoaded',async()=>{ const defaultLang = langSelect.value || 'uk'; applyTranslations(defaultLang); if(window.matchMedia && window.matchMedia('(max-width:768px)').matches){ countryInput.style.display='none'; el('label-country').style.display='none'; countrySelect.style.display='block'; el('label-countrySelect').style.display='block'; } else { countrySelect.style.display='none'; el('label-countrySelect').style.display='none'; } await loadRatesForLang(defaultLang); await loadPresenceCountries(); setMode('parcel'); });
 </script>
 </body>
 </html>
