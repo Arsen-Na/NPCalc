@@ -26,6 +26,8 @@
     .row>div{flex-direction:column;justify-content:center;gap:8px;min-height:84px;padding:12px 10px 4px}
     .after-country{margin-top:6px}
     .customs{margin-top:12px;padding:12px;background:#fff7f0;border:1px solid #f2d9c4;border-radius:6px;color:#111}
+    .warning{margin-top:12px;padding:12px;background:#ffecec;border:1px solid #f5c2c2;border-radius:6px;color:#611}
+    .warning a{color:#522;text-decoration:underline}
   </style>
 </head>
 <body>
@@ -84,6 +86,8 @@
     <strong id="customsText">Вартість митних платежів складе: —</strong>
     <div id="customsDetails" class="muted" style="margin-top:6px"></div>
   </div>
+
+  <div id="presenceWarning" class="warning" style="display:none" aria-live="polite"></div>
 </main>
 
 <script>
@@ -92,56 +96,50 @@ const el=id=>document.getElementById(id);
 const langSelect=el('langSelect'), titleEl=el('title'), introEl=el('intro');
 const lengthEl=el('length'), widthEl=el('width'), heightEl=el('height'), weightEl=el('weight');
 const volumetricEl=el('volumetric'), billableEl=el('billable'), priceEl=el('price');
-const fL=el('f-l'), fW=el('f-w'), fH=el('f-h');
+let fL=el('f-l'), fW=el('f-w'), fH=el('f-h');
 const countryInput=el('countryInput'), countrySelect=el('countrySelect');
 const declaredEl=el('declaredValue');
-const labelLang=el('label-lang'), labelCountrySelect=el('label-countrySelect');
 const customsBlock=el('customsBlock'), customsText=el('customsText'), customsDetails=el('customsDetails');
+const presenceWarning=el('presenceWarning');
 const unitKg=el('unit-kg'), unitKg2=el('unit-kg-2'), unitCurrency=el('unit-currency'), formulaRow=el('formula-row');
 
+const presenceCountries=[
+  'Україна','Молдова','Польща','Литва','Чехія','Румунія','Німеччина','Словаччина','Естонія','Латвія','Угорщина','Італія','Велика Британія','Іспанія','Франція','Австрія','Нідерланди'
+];
+
+const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
+
 const T={
- uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Завантаження…',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Оціночна вартість',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'Вартість митних платежів складе:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`},
- en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Loading…',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Poland',declaredLabel:'Estimated value',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'Customs payments will be:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`},
- pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Ładowanie…',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Wartość szacunkowa',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'Koszty opłat celnych wyniosą:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`}
+ uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Завантаження…',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Оціночна вартість',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'Вартість митних платежів складе:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ' ,presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS'},
+ en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Loading…',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Poland',declaredLabel:'Estimated value',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'Customs payments will be:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ' ,presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery'},
+ pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Ładowanie…',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',countryInputPlaceholder:'Polska',declaredLabel:'Wartość szacunkowa',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'Koszty opłat celnych wyniosą:',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ' ,presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)'}
 };
 
 let countries=[],ratesMap={},aliasMap={};
 const fallbackRate={s:100,m:150,over10:300,perKg:8};
 
-const debounce=(fn,ms=120)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
+const debounce=(fn,ms=120)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
 const parseNumber=el=>{const v=parseFloat(el.value);return Number.isFinite(v)?v:0;};
 const formatNumber=v=>((Math.round(v*100)/100).toFixed(2));
 const normalize=s=>(s||'').toLowerCase().replace(/\s+/g,' ').trim();
 
 let FX={EUR_PLN:null,EUR_UAH:null,lastFetched:0},FX_TTL=1000*60*30;
-async function fetchFxRates(){
-  const now=Date.now();
-  if(FX.lastFetched&&now-FX.lastFetched<FX_TTL&&FX.EUR_PLN&&FX.EUR_UAH)return FX;
-  try{
-    const res=await fetch('https://api.exchangerate.host/latest?base=EUR&symbols=PLN,UAH');
-    if(!res.ok)throw 0;
-    const data=await res.json();
-    FX.EUR_PLN=data.rates.PLN;FX.EUR_UAH=data.rates.UAH;FX.lastFetched=Date.now();
-    return FX;
-  }catch(e){
-    FX.EUR_PLN=FX.EUR_PLN||4.3;FX.EUR_UAH=FX.EUR_UAH||40;FX.lastFetched=Date.now();return FX;
-  }
-}
+async function fetchFxRates(){const now=Date.now();if(FX.lastFetched&&now-FX.lastFetched<FX_TTL&&FX.EUR_PLN&&FX.EUR_UAH)return FX;try{const res=await fetch('https://api.exchangerate.host/latest?base=EUR&symbols=PLN,UAH');if(!res.ok)throw 0;const data=await res.json();FX.EUR_PLN=data.rates.PLN;FX.EUR_UAH=data.rates.UAH;FX.lastFetched=Date.now();return FX;}catch(e){FX.EUR_PLN=FX.EUR_PLN||4.3;FX.EUR_UAH=FX.EUR_UAH||40;FX.lastFetched=Date.now();return FX;}}
 
 function ratesFileForLang(lang){if(lang==='pl')return'./rates.json';if(lang==='uk')return'./rates-ua.json';if(lang==='en')return'./rates-eng.json';return'./rates.json';}
 
 function applyTranslations(lang){
   const t=T[lang]||T.uk;
   htmlEl.lang=lang;
-  labelLang.textContent=t.langLabel;titleEl.textContent=t.title;introEl.textContent=t.intro;
+  el('label-lang').textContent=t.langLabel;titleEl.textContent=t.title;introEl.textContent=t.intro;
   el('label-length').textContent=t.length;el('label-width').textContent=t.width;el('label-height').textContent=t.height;
-  el('label-weight').textContent=t.weight;el('label-country').textContent=t.country;labelCountrySelect.textContent=t.country;
+  el('label-weight').textContent=t.weight;el('label-country').textContent=t.country;el('label-countrySelect').textContent=t.country;
   el('label-volumetric').textContent=t.volumetric;el('label-billable').textContent=t.billable;el('label-price').textContent=t.price;
   unitKg.textContent=t.unitKg;unitKg2.textContent=t.unitKg;unitCurrency.textContent=t.currency;
   countryInput.placeholder=t.countryInputPlaceholder;fL.textContent=t.formulaWords.l;fW.textContent=t.formulaWords.w;fH.textContent=t.formulaWords.h;
   el('label-declared').textContent=t.declaredLabel;declaredEl.placeholder=t.declaredPlaceholder;
   formulaRow.innerHTML=`${t.formulaLabel}: <span class="formula">(<span id="f-l">${t.formulaWords.l}</span> × <span id="f-w">${t.formulaWords.w}</span> × <span id="f-h">${t.formulaWords.h}</span>) ÷ 4000</span>`;
-  window.fL=document.getElementById('f-l');window.fW=document.getElementById('f-w');window.fH=document.getElementById('f-h');
+  fL=document.getElementById('f-l');fW=document.getElementById('f-w');fH=document.getElementById('f-h');
 }
 
 async function loadRatesForLang(lang){
@@ -155,9 +153,8 @@ async function loadRatesForLang(lang){
     populateCountrySelects();
     const preferred=countries.find(c=>/Polska|Poland|Україна|Ukraine/i.test(c))||countries[0]||'';
     if(preferred){countryInput.value=preferred;countrySelect.value=preferred;}
-  }catch(e){
-    countrySelect.innerHTML='<option value="" disabled selected>Not available</option>';countries=[];ratesMap={};
-  }finally{compute();}
+  }catch(e){countrySelect.innerHTML='<option value="" disabled selected>Not available</option>';countries=[];ratesMap={};}
+  finally{compute();}
 }
 
 function populateCountrySelects(){countrySelect.innerHTML='';const frag=document.createDocumentFragment();countries.forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name;frag.appendChild(o);});countrySelect.appendChild(frag);}
@@ -170,7 +167,7 @@ function syncSelectToInput(){if(countrySelect.value)countryInput.value=countrySe
 async function compute(){
   const t=T[htmlEl.lang]||T.uk;
   const L=parseNumber(lengthEl),W=parseNumber(widthEl),H=parseNumber(heightEl);
-  if(!L||!W||!H){volumetricEl.textContent=billableEl.textContent=priceEl.textContent='—';hideCustoms();return;}
+  if(!L||!W||!H){volumetricEl.textContent=billableEl.textContent=priceEl.textContent='—';hideCustoms();hideWarning();return;}
   const vol=(L*W*H)/4000;volumetricEl.textContent=formatNumber(vol);
   const actual=parseNumber(weightEl),billable=Math.max(vol,actual);billableEl.textContent=formatNumber(billable);
   const userInput=countryInput.value||countrySelect.value||'';const r=ratesMap[resolveCountry(userInput)]||fallbackRate;
@@ -179,9 +176,7 @@ async function compute(){
   const declared=parseNumber(declaredEl);
   let surcharge=0,surchargeShown=0;if(declared>=1000){surcharge=declared*0.005;surchargeShown=surcharge;}
   const total=basePrice+surcharge;
-  const parts=[];
-  if(billable>10){if(priceFor10kg==null)priceFor10kg=r.over10;parts.push(`${priceFor10kg} ${t.per10}`);parts.push(`${perExtraKg} ${t.perExtra}`);}
-  if(surchargeShown>0)parts.push(`${formatNumber(surchargeShown)} ${t.insuranceText}`);
+  const parts=[];if(billable>10){if(priceFor10kg==null)priceFor10kg=r.over10;parts.push(`${priceFor10kg} ${t.per10}`);parts.push(`${perExtraKg} ${t.perExtra}`);}if(surchargeShown>0)parts.push(`${formatNumber(surchargeShown)} ${t.insuranceText}`);
   const inside=parts.length?` (${parts.join(t.andSeparator)})`:'';
   priceEl.textContent=`${formatNumber(total)} PLN${inside}`;
 
@@ -202,16 +197,23 @@ async function compute(){
       customsText.textContent=t.customsTitle;
       customsDetails.textContent=t.customsDetailFmt(X_eur,X_uah,X_pln);
       customsBlock.style.display='block';
-      return;
-    }
-  }
-  hideCustoms();
+    } else hideCustoms();
+  } else hideCustoms();
+
+  const inPresence = destResolved && presenceCountries.some(pc=>pc.toLowerCase()===destResolved.toLowerCase());
+  if(!inPresence){
+    showWarning(t);
+  } else hideWarning();
 }
 
 function hideCustoms(){customsBlock.style.display='none';customsText.textContent='';customsDetails.textContent='';}
+function showWarning(t){
+  presenceWarning.style.display='block';
+  presenceWarning.innerHTML = `${t.presenceNotice}<a href="${noticeLink}" target="_blank" rel="noopener noreferrer">${t.presenceLinkText}</a>`;
+}
+function hideWarning(){presenceWarning.style.display='none';presenceWarning.innerHTML='';}
 
-[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(el=>el.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk;if(window.fL)window.fL.textContent=lengthEl.value||t.formulaWords.l;if(window.fW)window.fW.textContent=widthEl.value||t.formulaWords.w;if(window.fH)window.fH.textContent=heightEl.value||t.formulaWords.h;compute();},120)));
-
+[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(el=>el.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk;if(fL)fL.textContent=lengthEl.value||t.formulaWords.l;if(fW)fW.textContent=widthEl.value||t.formulaWords.w;if(fH)fH.textContent=heightEl.value||t.formulaWords.h;compute();},120)));
 countryInput.addEventListener('input',debounce(()=>{syncCountryToSelect();compute();},120));
 countryInput.addEventListener('change',()=>{syncCountryToSelect();compute();});
 countrySelect.addEventListener('change',()=>{syncSelectToInput();compute();});
@@ -235,7 +237,7 @@ countrySelect.addEventListener('change',()=>{syncSelectToInput();compute();});
 
 langSelect.addEventListener('change',async(e)=>{const lang=e.target.value;applyTranslations(lang);await loadRatesForLang(lang);});
 
-document.addEventListener('DOMContentLoaded',()=>{const defaultLang=langSelect.value||'uk';applyTranslations(defaultLang);if(window.matchMedia&&window.matchMedia('(max-width:768px)').matches){countryInput.style.display='none';el('label-country').style.display='none';countrySelect.style.display='block';labelCountrySelect.style.display='block';}else{countrySelect.style.display='none';labelCountrySelect.style.display='none';}loadRatesForLang(defaultLang);});
+document.addEventListener('DOMContentLoaded',()=>{const defaultLang=langSelect.value||'uk';applyTranslations(defaultLang);if(window.matchMedia&&window.matchMedia('(max-width:768px)').matches){countryInput.style.display='none';el('label-country').style.display='none';countrySelect.style.display='block';el('label-countrySelect').style.display='block';}else{countrySelect.style.display='none';el('label-countrySelect').style.display='none';}loadRatesForLang(defaultLang);});
 </script>
 </body>
 </html>
