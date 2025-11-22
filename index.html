@@ -27,6 +27,21 @@
     }
     .lang-row{display:flex;justify-content:flex-end}
     .lang-select{width:170px}
+    .row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: stretch; /* зберігає рівну висоту колонок */
+}
+
+.row > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* вертикальне центрування елементів всередині колонки */
+  gap: 8px;                 /* відступ між label і input */
+  min-height: 84px;         /* необов'язково: при потребі встановіть бажану висоту */
+  padding: 12px 10px 4px;
+}
   </style>
 </head>
 <body>
@@ -380,3 +395,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
+
