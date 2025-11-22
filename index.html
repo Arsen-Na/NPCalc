@@ -31,10 +31,16 @@
 
     /* vertical centering inside .row columns (keeps existing look) */
     .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
-    .row > div { flex-direction: column; justify-content: center; gap: 8px; min-height: 84px; padding: 12px 10px 4px; }
+    .row > div { display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 84px; padding: 12px 10px 4px; }
 
     /* small helper for the new estimated value input to keep spacing consistent */
     .after-country { margin-top: 6px; }
+
+    /* customs block (same visual family as .result) */
+    .customs {
+      margin-top:12px;padding:12px;background:#fff7f0;border:1px solid #f2d9c4;border-radius:6px;
+      color:#111;
+    }
   </style>
 </head>
 <body>
@@ -80,7 +86,7 @@
     <option value="" disabled selected id="mobile-placeholder">Завантаження…</option>
   </select>
 
-  <!-- NEW: Estimated value input (numeric only) -->
+  <!-- Estimated value input -->
   <div class="after-country">
     <label for="declaredValue" id="label-declared">Оціночна вартість</label>
     <input id="declaredValue" type="number" inputmode="decimal" pattern="[0-9]*" step="any" min="0" placeholder="0">
@@ -92,6 +98,12 @@
     <div style="margin-top:8px"><strong id="label-volumetric">Об'ємна вага:</strong> <span id="volumetric">—</span> <span class="muted" id="unit-kg">kg</span></div>
     <div style="margin-top:8px"><strong id="label-billable">Платна вага:</strong> <span id="billable">—</span> <span class="muted" id="unit-kg-2">kg</span></div>
     <div style="margin-top:8px"><strong id="label-price">Ціна:</strong> <span id="price">—</span> <span class="muted" id="unit-currency">PLN</span></div>
+  </div>
+
+  <!-- customs block (injected/shown when conditions met) -->
+  <div id="customsBlock" class="customs" style="display:none" aria-live="polite">
+    <strong id="customsText">Вартість митних платежів складе: —</strong>
+    <div id="customsDetails" class="muted" style="margin-top:6px"></div>
   </div>
 </main>
 
@@ -134,7 +146,11 @@ const unitKg2 = document.getElementById('unit-kg-2');
 const unitCurrency = document.getElementById('unit-currency');
 const labelDeclared = document.getElementById('label-declared');
 
-/* Translations and small text pieces for price breakdown */
+const customsBlock = document.getElementById('customsBlock');
+const customsText = document.getElementById('customsText');
+const customsDetails = document.getElementById('customsDetails');
+
+/* Translations and small text pieces for price breakdown and customs */
 const T = {
   uk: {
     langLabel: 'Мова', title: 'Калькулятор ціни',
@@ -146,11 +162,12 @@ const T = {
     countryInputPlaceholder: 'Polska',
     declaredLabel: 'Оціночна вартість',
     declaredPlaceholder: '0',
-    // pieces for price line
     per10: 'за 10 КГ',
     perExtra: 'за кожен наступний КГ',
     insuranceText: '0.5% "страхування" від ОВ',
-    andSeparator: ', '
+    andSeparator: ', ',
+    customsTitle: 'Вартість митних платежів складе:',
+    customsDetailFmt: (eur, uah, pln) => ` ${eur} EUR або ${uah} UAH або ${pln} PLN`
   },
   en: {
     langLabel: 'Language', title: 'Price calculator',
@@ -165,7 +182,9 @@ const T = {
     per10: 'for 10 KG',
     perExtra: 'for each next KG',
     insuranceText: '0.5% "insurance" of EV',
-    andSeparator: ', '
+    andSeparator: ', ',
+    customsTitle: 'Customs payments will be:',
+    customsDetailFmt: (eur, uah, pln) => ` ${eur} EUR or ${uah} UAH or ${pln} PLN`
   },
   pl: {
     langLabel: 'Język', title: 'Kalkulator ceny',
@@ -179,8 +198,10 @@ const T = {
     declaredPlaceholder: '0',
     per10: 'za 10 KG',
     perExtra: 'za każdy kolejny KG',
-    insuranceText: '0.5% "ubezpieczenie" od WS',
-    andSeparator: ', '
+    insuranceText: '0.5% "ubezpieczenie" od WŚ',
+    andSeparator: ', ',
+    customsTitle: 'Koszty opłat celnych wyniosą:',
+    customsDetailFmt: (eur, uah, pln) => ` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`
   }
 };
 
@@ -193,6 +214,31 @@ const debounce = (fn, ms=120)=>{ let t; return (...a)=>{ clearTimeout(t); t = se
 const parseNumber = el => { const v = parseFloat(el.value); return Number.isFinite(v) ? v : 0; };
 const formatNumber = v => (Math.round(v*100)/100).toFixed(2);
 const normalize = s => (s||'').toLowerCase().replace(/\s+/g,' ').trim();
+
+/* Exchange rates caching (to avoid repeated calls) */
+let FX = { EUR_PLN: null, EUR_UAH: null, lastFetched: 0 };
+const FX_TTL = 1000 * 60 * 30; // 30 minutes
+
+/* Fetch latest EUR->PLN and EUR->UAH rates via exchangerate.host */
+async function fetchFxRates(){
+  const now = Date.now();
+  if (FX.lastFetched && (now - FX.lastFetched) < FX_TTL && FX.EUR_PLN && FX.EUR_UAH) return FX;
+  try {
+    const res = await fetch('https://api.exchangerate.host/latest?base=EUR&symbols=PLN,UAH');
+    if (!res.ok) throw new Error('fx fetch failed');
+    const data = await res.json();
+    FX.EUR_PLN = data.rates.PLN; // PLN per 1 EUR
+    FX.EUR_UAH = data.rates.UAH; // UAH per 1 EUR
+    FX.lastFetched = Date.now();
+    return FX;
+  } catch (e) {
+    // fallback static-ish rates if network fails (safe default)
+    FX.EUR_PLN = FX.EUR_PLN || 4.3;
+    FX.EUR_UAH = FX.EUR_UAH || 40;
+    FX.lastFetched = Date.now();
+    return FX;
+  }
+}
 
 /* Map language to file name */
 function ratesFileForLang(lang){
@@ -290,13 +336,12 @@ function resolveCountry(input){
 function syncCountryToSelect(){ const r = resolveCountry(countryInput.value); if (r) countrySelect.value = r; }
 function syncSelectToInput(){ if (countrySelect.value) countryInput.value = countrySelect.value; }
 
-/* Compute price (with declared value surcharge if >= 1000 PLN: +0.5% of declared) */
-/* Modified to render detailed price line per user's spec and translations */
-function compute(){
+/* Compute price and customs display */
+async function compute(){
   const t = T[htmlEl.lang] || T.uk;
 
   const L = parseNumber(lengthEl), W = parseNumber(widthEl), H = parseNumber(heightEl);
-  if (!L || !W || !H){ volumetricEl.textContent = billableEl.textContent = priceEl.textContent = '—'; return; }
+  if (!L || !W || !H){ volumetricEl.textContent = billableEl.textContent = priceEl.textContent = '—'; hideCustoms(); return; }
   const vol = (L*W*H)/4000;
   volumetricEl.textContent = formatNumber(vol);
   const actual = parseNumber(weightEl), billable = Math.max(vol, actual);
@@ -310,9 +355,7 @@ function compute(){
     basePrice = r.s;
   } else if (billable <= 10) {
     basePrice = r.m;
-    // still provide Y (10 kg price) only if billable > 10 per spec - so leave null
   } else {
-    // billable > 10
     priceFor10kg = r.over10;
     perExtraKg = r.perKg;
     basePrice = r.over10 + (Math.ceil(billable) - 10) * r.perKg;
@@ -329,49 +372,69 @@ function compute(){
 
   const total = basePrice + surcharge;
 
-  // Build detailed price text according to user's requested format and conditions
-  // Format: X PLN (Y за 10 КГ, Z за кожен наступний КГ, A 0.5% "страхування" від ОВ)
-  // Only include each segment if relevant per conditions:
-  // - Y and Z appear only when volumetric or actual weight exceed 10kg (we check billable > 10)
-  // - A appears only when declared >= 1000
+  // Build detailed price text
   const parts = [];
-
-  // If billable > 10, include Y and Z pieces
   if (billable > 10) {
-    // Y: price for 10 kg according to table
-    if (priceFor10kg == null) {
-      // price for 10 kg is r.over10 (table defines over10 as price for 10 kg bucket)
-      priceFor10kg = r.over10;
-    }
+    if (priceFor10kg == null) priceFor10kg = r.over10;
     parts.push(`${priceFor10kg} ${t.per10}`);
-    // Z: per extra kg
     parts.push(`${perExtraKg} ${t.perExtra}`);
   }
-
-  // If declared >= 1000, include A piece (surcharge amount)
   if (surchargeShown > 0) {
     parts.push(`${formatNumber(surchargeShown)} ${t.insuranceText}`);
   }
-
-  // Join parts with localized separator
   const inside = parts.length ? ` (${parts.join(t.andSeparator)})` : '';
+  priceEl.textContent = `${formatNumber(total)} PLN${inside}`;
 
-  // Final X with currency and append inside
-  const finalText = `${formatNumber(total)} PLN${inside}`;
+  // Customs: only when destination is Ukraine AND declared (converted to EUR) >= 150 EUR
+  const destResolved = resolveCountry(userInput);
+  const isUkraine = destResolved && /Україн|Ukraine|Ukraina/i.test(destResolved);
+  if (isUkraine && declared > 0) {
+    // Need to get EUR value of declared (declared is in PLN)
+    const fx = await fetchFxRates(); // fills FX.EUR_PLN (PLN per 1 EUR)
+    const eurPerPln = 1 / fx.EUR_PLN; // 1 PLN equals how many EUR
+    const declaredEUR = declared * eurPerPln;
+    if (declaredEUR >= 150) {
+      // perform customs calc based on EUR
+      const excess = declaredEUR - 150;
+      const duty = excess * 0.10;
+      const vat = (excess + duty) * 0.20;
+      const customsTotalEUR = duty + vat;
 
-  // Set price output
-  priceEl.textContent = finalText;
+      // Convert customs total to PLN and UAH using fetched rates
+      const customsPLN = customsTotalEUR * fx.EUR_PLN;
+      const customsUAH = customsTotalEUR * fx.EUR_UAH;
+
+      // Format numbers
+      const X_eur = formatNumber(customsTotalEUR);
+      const X_uah = formatNumber(customsUAH);
+      const X_pln = formatNumber(customsPLN);
+
+      // Show customs block with localized text (single line)
+      customsText.textContent = t.customsTitle;
+      customsDetails.textContent = t.customsDetailFmt(X_eur, X_uah, X_pln);
+      customsBlock.style.display = 'block';
+      return;
+    }
+  }
+  // otherwise hide customs
+  hideCustoms();
+}
+
+function hideCustoms(){
+  customsBlock.style.display = 'none';
+  customsText.textContent = '';
+  customsDetails.textContent = '';
 }
 
 /* Wire events */
-[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(el=>el.addEventListener('input', ()=>{
+[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(el=>el.addEventListener('input', debounce(()=> {
   fL.textContent = lengthEl.value || T[htmlEl.lang].formula.l;
   fW.textContent = widthEl.value || T[htmlEl.lang].formula.w;
   fH.textContent = heightEl.value || T[htmlEl.lang].formula.h;
   compute();
-}));
+}, 120)));
 
-countryInput.addEventListener('input', ()=>{ syncCountryToSelect(); compute(); });
+countryInput.addEventListener('input', debounce(()=>{ syncCountryToSelect(); compute(); },120));
 countryInput.addEventListener('change', ()=>{ syncCountryToSelect(); compute(); });
 countrySelect.addEventListener('change', ()=>{ syncSelectToInput(); compute(); });
 
@@ -464,4 +527,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
-
