@@ -183,7 +183,7 @@
   {"country":"Turkey","docs":80,"s":120,"m":200,"over10":200,"perKg":4},
   {"country":"Tuvalu","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
   {"country":"Uganda","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
-  {"country":"Ukraine","docs":50,"s":60,"m":75,"over10":75,"perKg":4},
+  {"country":"Ukraine","docs":55,"s":65,"m":80,"over10":80,"perKg":4},
   {"country":"Uruguay","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
   {"country":"Uzbekistan","docs":80,"s":120,"m":200,"over10":200,"perKg":4},
   {"country":"Vanuatu","docs":100,"s":150,"m":300,"over10":300,"perKg":8},
