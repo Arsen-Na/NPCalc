@@ -8,6 +8,7 @@ const countryInput=el('countryInput'),countrySelect=el('countrySelect');
 const declaredEl=el('declaredValue');
 const customsBlock=el('customsBlock'),customsText=el('customsText'),customsDetails=el('customsDetails');
 const presenceWarning=el('presenceWarning');
+const weightBlock=el('weightBlock');
 const unitKg=el('unit-kg'),unitKg2=el('unit-kg-2'),unitCurrency=el('unit-currency'),formulaRow=el('formula-row');
 const btnParcel=el('btnParcel'),btnDocs=el('btnDocs');
 const addressWrap=el('addressWrap'),addressCheckbox=el('addressDelivery'),addressLabel=el('addressLabel');
@@ -16,9 +17,9 @@ const themeSwitch=el('themeSwitch'),themeLabel=el('themeLabel');
 const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
 
 const T={
- uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість (zł)',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'це 0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'<strong>Орієнтовна</strong> вартість митних платежів (орієнтуйтесь на ціну у євро)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',addressLabel:'Адресна доставка',pickupLabel:'Адресний забір',addrNoteSmall:(n)=>`додаткова плата за адресну доставку: ${n} zł`,addrNoteLarge:(n)=>`додаткова плата за адресну доставку: ${n} zł за кожні розпочаті 100 кг`,pickupNoteSmall:'додаткова плата за адресний забір: 10 zł',pickupNoteLarge:'додаткова плата за адресний забір: 25 zł за кожні розпочаті 100 кг',pkgBtnLabel:'Додати пакування',pkgModalTitle:'Оберіть пакування',pkgSearchPlaceholder:'Назва або код…',pkgPriceNote:(n,name)=>`пакування: +${n} zł (${name})`,mode:{parcel:'Посилка',docs:'Документи'}},
- en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value (zl)',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'is 0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'<strong>Approximate</strong> customs payments (refer to the price in euros)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',addressLabel:'Address delivery',pickupLabel:'Address pickup',addrNoteSmall:(n)=>`address delivery surcharge: ${n} zł`,addrNoteLarge:(n)=>`address delivery surcharge: ${n} zł per each started 100 kg`,pickupNoteSmall:'address pickup surcharge: 10 zł',pickupNoteLarge:'address pickup surcharge: 25 zł per each started 100 kg',pkgBtnLabel:'Add packaging',pkgModalTitle:'Choose packaging',pkgSearchPlaceholder:'Name or code…',pkgPriceNote:(n,name)=>`packaging: +${n} zł (${name})`,mode:{parcel:'Parcel',docs:'Documents'}},
- pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa (zł)',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'to 0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'<strong>Przybliżony</strong> koszt opłat celnych (orientuj się ceną w euro)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',addressLabel:'Dostawa pod adres',pickupLabel:'Odbiór pod adresem',addrNoteSmall:(n)=>`dopłata za dostawę pod adres: ${n} zł`,addrNoteLarge:(n)=>`dopłata za dostawę pod adres: ${n} zł za każde rozpoczęte 100 kg`,pickupNoteSmall:'dopłata za odbiór pod adresem: 10 zł',pickupNoteLarge:'dopłata za odbiór pod adresem: 25 zł za każde rozpoczęte 100 kg',pkgBtnLabel:'Dodaj opakowanie',pkgModalTitle:'Wybierz opakowanie',pkgSearchPlaceholder:'Nazwa lub kod…',pkgPriceNote:(n,name)=>`opakowanie: +${n} zł (${name})`,mode:{parcel:'Paczka',docs:'Dokumenty'}}};
+ uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість (zł)',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'це 0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'<strong>Орієнтовна</strong> вартість митних платежів (орієнтуйтесь на ціну у євро)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',addressLabel:'Адресна доставка',pickupLabel:'Адресний забір',addrNoteSmall:(n)=>`додаткова плата за адресну доставку: ${n} zł`,addrNoteLarge:(n)=>`додаткова плата за адресну доставку: ${n} zł за кожні розпочаті 100 кг`,pickupNoteSmall:'додаткова плата за адресний забір: 10 zł',pickupNoteLarge:'додаткова плата за адресний забір: 25 zł за кожні розпочаті 100 кг',pkgBtnLabel:'Додати пакування',pkgModalTitle:'Оберіть пакування',pkgSearchPlaceholder:'Назва або код…',pkgPriceNote:(n,name)=>`пакування: +${n} zł (${name})`,heavySurchargeNote:'Додаткова плата за посилки від 25 кг до 70 кг: +150 zł',heavyBlockMsg:'Доставка посилок із такою вагою у дану країну не можлива',mode:{parcel:'Посилка',docs:'Документи'}},
+ en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value (zl)',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'is 0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'<strong>Approximate</strong> customs payments (refer to the price in euros)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',addressLabel:'Address delivery',pickupLabel:'Address pickup',addrNoteSmall:(n)=>`address delivery surcharge: ${n} zł`,addrNoteLarge:(n)=>`address delivery surcharge: ${n} zł per each started 100 kg`,pickupNoteSmall:'address pickup surcharge: 10 zł',pickupNoteLarge:'address pickup surcharge: 25 zł per each started 100 kg',pkgBtnLabel:'Add packaging',pkgModalTitle:'Choose packaging',pkgSearchPlaceholder:'Name or code…',pkgPriceNote:(n,name)=>`packaging: +${n} zł (${name})`,heavySurchargeNote:'Additional charge for parcels from 25 kg to 70 kg: +150 zł',heavyBlockMsg:'Delivery of parcels with such weight to this country is not possible',mode:{parcel:'Parcel',docs:'Documents'}},
+ pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa (zł)',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'to 0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'<strong>Przybliżony</strong> koszt opłat celnych (orientuj się ceną w euro)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',addressLabel:'Dostawa pod adres',pickupLabel:'Odbiór pod adresem',addrNoteSmall:(n)=>`dopłata za dostawę pod adres: ${n} zł`,addrNoteLarge:(n)=>`dopłata za dostawę pod adres: ${n} zł za każde rozpoczęte 100 kg`,pickupNoteSmall:'dopłata za odbiór pod adresem: 10 zł',pickupNoteLarge:'dopłata za odbiór pod adresem: 25 zł za każde rozpoczęte 100 kg',pkgBtnLabel:'Dodaj opakowanie',pkgModalTitle:'Wybierz opakowanie',pkgSearchPlaceholder:'Nazwa lub kod…',pkgPriceNote:(n,name)=>`opakowanie: +${n} zł (${name})`,heavySurchargeNote:'Dodatkowa opłata za przesyłki od 25 kg do 70 kg: +150 zł',heavyBlockMsg:'Dostawa paczek o takiej wadze do tego kraju jest niemożliwa',mode:{parcel:'Paczka',docs:'Dokumenty'}}};
 
 let countries=[],ratesMap={},presenceCountriesAllNames=[];
 const fallbackRate={s:100,m:150,over10:300,perKg:8};
@@ -32,9 +33,10 @@ async function fetchFxRates(){
   const now=Date.now();
   if(FX.lastFetched && now-FX.lastFetched < FX_TTL && FX.EUR_PLN && FX.EUR_UAH) return FX;
   try{
-    const res = await fetch('https://api.exchangerate.host/latest?base=EUR&symbols=PLN,UAH');
+    const res = await fetch('https://open.er-api.com/v6/latest/EUR');
     if(!res.ok) throw 0;
     const data = await res.json();
+    if(!data.rates || !data.rates.PLN || !data.rates.UAH) throw 0;
     FX.EUR_PLN = data.rates.PLN;
     FX.EUR_UAH = data.rates.UAH;
     FX.lastFetched = Date.now();
@@ -160,12 +162,12 @@ async function compute(){
   if(vol>0 && actual>0) billable = Math.max(vol, actual);
   else if(vol>0) billable = vol;
   else if(actual>0) billable = actual;
-  else { volumetricEl.textContent='—'; billableEl.textContent=priceEl.textContent='—'; hideCustoms(); hideWarning(); hideAddress(); return; }
+  else { volumetricEl.textContent='—'; billableEl.textContent=priceEl.textContent='—'; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); return; }
   billableEl.textContent = formatNumber(billable);
 
   const userInput = countryInput.value || countrySelect.value || '';
   const destResolved = resolveCountry(userInput);
-  if(!destResolved){ priceEl.textContent='\u2014'; hideCustoms(); hideWarning(); hideAddress(); return; }
+  if(!destResolved){ priceEl.textContent='\u2014'; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); return; }
   const r = ratesMap[ destResolved ] || fallbackRate;
   let basePrice, priceFor10kg=null, perExtraKg=null;
   if(sendMode==='docs' && r && typeof r.docs!=='undefined'){ basePrice = Number(r.docs); }
@@ -187,7 +189,9 @@ async function compute(){
   const addrSurcharge = calcAddressSurcharge(billable, addrChecked, r);
 
   const pkgPrice = (selectedPackaging && selectedPackaging.price > 0) ? selectedPackaging.price : 0;
-  const total = basePrice + surcharge + addrSurcharge + pickupSurcharge + pkgPrice;
+  const isNonPresence = destResolved && !presenceCountriesAllNames.some(arr=>arr.includes(normalize(destResolved)));
+  const heavySurcharge = (isNonPresence && sendMode==='parcel' && billable>=25 && billable<=70) ? 150 : 0;
+  const total = basePrice + surcharge + addrSurcharge + pickupSurcharge + pkgPrice + heavySurcharge;
 
   const parts=[];
   if(billable>10){ if(priceFor10kg==null) priceFor10kg = r.over10; parts.push(`${priceFor10kg} ${t.per10}`); parts.push(`${perExtraKg} ${t.perExtra}`); }
@@ -203,14 +207,15 @@ async function compute(){
     const pkgDisplayName = pkgName(selectedPackaging).replace(/[()]/g, '').replace(/\s+/g,' ').trim();
     parts.push(t.pkgPriceNote(pkgPrice, pkgDisplayName));
   }
+  if(heavySurcharge > 0) parts.push(t.heavySurchargeNote);
 
   const inside = parts.length ? ` (${parts.join(t.andSeparator)})` : '';
   priceEl.textContent = `${formatNumber(total)}${inside}`;
 
   const destNorm = normalize(destResolved);
-  const inPresence = destResolved && presenceCountriesAllNames.some(arr=>arr.includes(destNorm));
+  const inPresenceFlag = destResolved && presenceCountriesAllNames.some(arr=>arr.includes(destNorm));
 
-  if(inPresence){
+  if(inPresenceFlag){
     showAddress();
   } else {
     hideAddress();
@@ -235,10 +240,25 @@ async function compute(){
     } else hideCustoms();
   } else hideCustoms();
 
-  const inPresenceFlag = destResolved && presenceCountriesAllNames.some(arr=>arr.includes(destNorm));
   if(destResolved && !inPresenceFlag) showWarning(t); else hideWarning();
+
+  // Heavy parcel surcharge / block (non-presence countries, parcel mode only)
+  if(!inPresenceFlag && sendMode==='parcel'){
+    if(billable > 70){
+      priceEl.textContent = '—';
+      showWeightBlock();
+    } else if(billable >= 25){
+      hideWeightBlock();
+    } else {
+      hideWeightBlock();
+    }
+  } else {
+    hideWeightBlock();
+  }
 }
 
+function showWeightBlock(){ weightBlock.style.display='block'; weightBlock.textContent = (T[htmlEl.lang]||T.uk).heavyBlockMsg; }
+function hideWeightBlock(){ weightBlock.style.display='none'; weightBlock.textContent=''; }
 function showAddress(){
   addressWrap.style.display='flex';
   addressWrap.setAttribute('aria-hidden','false');
@@ -255,7 +275,6 @@ function showWarning(t){ presenceWarning.style.display='block'; presenceWarning.
 function hideWarning(){ presenceWarning.style.display='none'; presenceWarning.innerHTML=''; }
 
 [lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(i=>i.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk; if(fL) fL.textContent = lengthEl.value || t.formulaWords.l; if(fW) fW.textContent = widthEl.value || t.formulaWords.w; if(fH) fH.textContent = heightEl.value || t.formulaWords.h; compute();},120)));
-declaredEl.addEventListener('change',()=>compute());
 countryInput.addEventListener('input',debounce(()=>{syncCountryToSelect();compute();},120));
 countryInput.addEventListener('change',()=>{syncCountryToSelect();compute()});
 countrySelect.addEventListener('change',()=>{syncSelectToInput();compute()});
@@ -266,9 +285,9 @@ pickupCheckbox.addEventListener('change',()=>compute());
   const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); if(isMobile) return;
   const wrapper=countryInput.parentElement; wrapper.style.position=wrapper.style.position||'relative';
   const dropdown=document.createElement('ul');dropdown.className='dropdown';dropdown.hidden=true;wrapper.appendChild(dropdown);
-  let items=[],highlighted=-1,MAX_SHOW=200;
+  let highlighted=-1,MAX_SHOW=200;
   const render=arr=>{dropdown.innerHTML='';if(!arr||!arr.length){dropdown.hidden=true;return}const frag=document.createDocumentFragment();arr.forEach((name,i)=>{const li=document.createElement('li');li.textContent=name;li.dataset.index=i;li.addEventListener('mousedown',e=>e.preventDefault());li.addEventListener('click',()=>{countryInput.value=name;dropdown.hidden=true;syncCountryToSelect();compute()});frag.appendChild(li)});dropdown.appendChild(frag);dropdown.hidden=false;highlighted=-1};
-  const showMatches=q=>{const qn = normalize(q===undefined?countryInput.value:q);let res=[];if(!qn) res = countries.slice(0,MAX_SHOW);else {const seen=new Set();for(const c of countries){const lc=c.toLowerCase();if(lc.startsWith(qn) && !seen.has(lc)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW) break;}}if(res.length<MAX_SHOW) for(const c of countries){const lc=c.toLowerCase();if(!seen.has(lc) && lc.includes(qn)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW) break;}}}items=res;render(res);};
+  const showMatches=q=>{const qn = normalize(q===undefined?countryInput.value:q);let res=[];if(!qn) res = countries.slice(0,MAX_SHOW);else {const seen=new Set();for(const c of countries){const lc=c.toLowerCase();if(lc.startsWith(qn) && !seen.has(lc)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW) break;}}if(res.length<MAX_SHOW) for(const c of countries){const lc=c.toLowerCase();if(!seen.has(lc) && lc.includes(qn)){res.push(c);seen.add(lc);if(res.length>=MAX_SHOW) break;}}}render(res);};
   const debouncedShow=debounce(showMatches,120);
   countryInput.addEventListener('focus',()=>showMatches());
   countryInput.addEventListener('click',e=>{ e.stopPropagation(); showMatches(); });
@@ -347,14 +366,14 @@ function renderPkgList(query){
 }
 
 function openPkgModal(){
-  el('pkgModal').style.display = 'flex';
+  el('pkgModal').classList.add('modal-open');
   el('pkgSearch').value = '';
   renderPkgList('');
   setTimeout(()=>el('pkgSearch').focus(), 60);
 }
 
 function closePkgModal(){
-  el('pkgModal').style.display = 'none';
+  el('pkgModal').classList.remove('modal-open');
 }
 
 function selectPackaging(p){
@@ -385,14 +404,14 @@ function clearPackaging(){
     });
     lengthEl.value = ''; widthEl.value = ''; heightEl.value = '';
   }
-  const t = T[htmlEl.lang]||T.uk;
+  const fw = (T[htmlEl.lang]||T.uk).formulaWords;
   el('pkgBtn').classList.remove('selected');
   el('pkgBtnIcon').textContent = '＋';
   el('pkgBtnLabel').textContent = pkgBtnText();
   el('pkgClear').style.display = 'none';
-  if(fL) fL.textContent = t.formulaWords.l;
-  if(fW) fW.textContent = t.formulaWords.w;
-  if(fH) fH.textContent = t.formulaWords.h;
+  if(fL) fL.textContent = fw.l;
+  if(fW) fW.textContent = fw.w;
+  if(fH) fH.textContent = fw.h;
   compute();
 }
 
@@ -405,10 +424,8 @@ el('pkgBtn').addEventListener('click', e => {
 el('pkgModalClose').addEventListener('click', closePkgModal);
 el('pkgModal').addEventListener('click', e => { if(e.target === el('pkgModal')) closePkgModal(); });
 el('pkgSearch').addEventListener('input', e => renderPkgList(e.target.value));
-document.addEventListener('keydown', e => { if(e.key==='Escape' && el('pkgModal').style.display!=='none') closePkgModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape' && el('pkgModal').classList.contains('modal-open')) closePkgModal(); });
 
-// clear packaging when switching to docs mode (docs fixes its own dims)
-const _origSetMode = setMode;
 // ── end packaging ───────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded',async ()=>{
@@ -417,7 +434,6 @@ document.addEventListener('DOMContentLoaded',async ()=>{
   setTheme(preferDark);
   const defaultLang = langSelect.value || 'uk';
   applyTranslations(defaultLang);
-  if(window.matchMedia && window.matchMedia('(max-width:768px)').matches){ countryInput.style.display='none'; el('label-country').style.display='none'; countrySelect.style.display='block'; el('label-countrySelect').style.display='block'; } else { countrySelect.style.display='none'; el('label-countrySelect').style.display='none'; }
   await loadRatesForLang(defaultLang);
   await loadPresenceCountries();
   await loadPackaging();
