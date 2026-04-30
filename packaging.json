@@ -1,0 +1,275 @@
+[
+  {
+      "code": ["p05"],
+      "name": {
+        "uk": "Фірмовий п/е пакет б/н 0,5 кг",
+        "pl": "Torba na odzież 0,5 kg",
+        "en": "Brand p/e package 0.5 kg"
+      },
+      "length": 25,
+      "width": 23.5,
+      "height": 3,
+      "price": 0,
+      "notes": ""
+    },
+    {
+      "code": ["p1"],
+      "name": {
+        "uk": "Фірмовий п/е пакет б/н 1 кг",
+        "pl": "Torba na odzież 1 kg",
+        "en": "Brand p/e package 1 kg"
+      },
+      "length": 35,
+      "width": 25,
+      "height": 4,
+      "price": 0,
+      "notes": ""
+    },
+    {
+      "code": ["02", "02p"],
+      "name": {
+        "uk": "Пакет для одягу 2кг",
+        "pl": "Torba na odzież 2 kg",
+        "en": "Bag for clothes 2 kg"
+      },
+      "length": 70,
+      "width": 40,
+      "height": 42,
+      "price": 0,
+      "notes": ""
+    },
+    {
+      "code": ["04"],
+      "name": {
+        "uk": "Великий пакет для одягу (4 кг)",
+        "pl": "Duża torba na odzież (4 kg)",
+        "en": "Large bag for clothes (4 kg)"
+      },
+      "length": 56,
+      "width": 44,
+      "height": 7,
+      "price": 0,
+      "notes": ""
+    },
+    {
+      "code": ["7", "7v"],
+      "name": {
+        "uk": "Конверт для документів",
+        "pl": "Koperta na dokumenty",
+        "en": "Envelope for documents"
+      },
+      "length": 35,
+      "width": 25,
+      "height": 2,
+      "price": 2,
+      "notes": ""
+    },
+    {
+      "code": ["715", "7e"],
+      "name": {
+        "uk": "Конверт з ПБ плівкою E/15",
+        "pl": "Koperta z f/b E/15",
+        "en": "Envelope with BW E/15"
+      },
+      "length": 22,
+      "width": 26.5,
+      "height": 1,
+      "price": 2,
+      "notes": ""
+    },
+    {
+      "code": ["714", "7b"],
+      "name": {
+        "uk": "Конверт з ПБ плівкою D/14",
+        "pl": "Koperta z f/b D/14",
+        "en": "Envelope with BW D/14"
+      },
+      "length": 18,
+      "width": 26.5,
+      "height": 1,
+      "price": 1.5,
+      "notes": ""
+    },
+    {
+      "code": ["713", "7c"],
+      "name": {
+        "uk": "Конверт з ПБ плівкою C/13",
+        "pl": "Koperta z f/b C/13",
+        "en": "Envelope with BW C/13"
+      },
+      "length": 15,
+      "width": 21.5,
+      "height": 1,
+      "price": 1,
+      "notes": ""
+    },
+    {
+      "code": ["05", "0,5"],
+      "name": {
+        "uk": "Коробка (0,5 кг) стандартна",
+        "pl": "Pudełko (0,5 kg) standard",
+        "en": "Box (0.5 kg) standard"
+      },
+      "length": 17,
+      "width": 12,
+      "height": 9,
+      "price": 4,
+      "notes": ""
+    },
+    {
+      "code": ["1", "1s"],
+      "name": {
+        "uk": "Коробка (1 кг) стандартна",
+        "pl": "Pudełko (1 kg) standard",
+        "en": "Box (1 kg) standard"
+      },
+      "length": 24,
+      "width": 17,
+      "height": 9,
+      "price": 4,
+      "notes": ""
+    },
+    {
+      "code": ["11", "1f"],
+      "name": {
+        "uk": "Коробка (1 кг) пласка ",
+        "pl": "Pudełko (1 kg) płaskie",
+        "en": "Box (1 kg) flat"
+      },
+      "length": 34,
+      "width": 24,
+      "height": 4,
+      "price": 4,
+      "notes": ""
+    },
+    {
+      "code": ["2", "2d"],
+      "name": {
+        "uk": "Коробка (2 кг)",
+        "pl": "Pudełko (2 kg)",
+        "en": "Box (2 kg)"
+      },
+      "length": 34,
+      "width": 24,
+      "height": 9,
+      "price": 4,
+      "notes": ""
+    },
+    {
+      "code": ["22", "2k"],
+      "name": {
+        "uk": "Коробка (2 кг) квадратна",
+        "pl": "Pudełko (2 kg) kwadratowe",
+        "en": "Box (2 kg) square"
+      },
+      "length": 24,
+      "width": 20,
+      "height": 16,
+      "price": 4,
+      "notes": ""
+    },
+    {
+      "code": ["3", "3d"],
+      "name": {
+        "uk": "Коробка (3 кг)",
+        "pl": "Pudełko (3 kg)",
+        "en": "Box (3 kg)"
+      },
+      "length": 24,
+      "width": 24,
+      "height": 20,
+      "price": 7,
+      "notes": ""
+    },
+    {
+      "code": ["33", "3f"],
+      "name": {
+        "uk": "Коробка (3 кг) пласка",
+        "pl": "Pudełko (3 kg) płaskie",
+        "en": "Box (3 kg) flat"
+      },
+      "length": 34,
+      "width": 24,
+      "height": 20,
+      "price": 7,
+      "notes": ""
+    },
+    {
+      "code": ["4", "4d"],
+      "name": {
+        "uk": "Коробка (4 кг) для ноутбука",
+        "pl": "Pudełko (4 kg) na laptopa",
+        "en": "Box (4 kg) for laptop"
+      },
+      "length": 53.5,
+      "width": 38,
+      "height": 7.5,
+      "price": 7,
+      "notes": ""
+    },
+    {
+      "code": ["5", "5d"],
+      "name": {
+        "uk": "Коробка (5 кг)",
+        "pl": "Pudełko (5 kg)",
+        "en": "Box (5 kg)"
+      },
+      "length": 40,
+      "width": 24,
+      "height": 20,
+      "price": 8,
+      "notes": ""
+    },
+    {
+      "code": ["10", "10d"],
+      "name": {
+        "uk": "Коробка (10 кг)",
+        "pl": "Pudełko (10 kg)",
+        "en": "Box (10 kg)"
+      },
+      "length": 40,
+      "width": 35,
+      "height": 28.5,
+      "price": 10,
+      "notes": ""
+    },
+    {
+      "code": ["15", "15d"],
+      "name": {
+        "uk": "Коробка (15 кг)",
+        "pl": "Pudełko (15 kg)",
+        "en": "Box (15 kg)"
+      },
+      "length": 60,
+      "width": 35,
+      "height": 28,
+      "price": 12,
+      "notes": ""
+    },
+    {
+      "code": ["20", "20d"],
+      "name": {
+        "uk": "Коробка (20 кг)",
+        "pl": "Pudełko (20 kg)",
+        "en": "Box (20 kg)"
+      },
+      "length": 47,
+      "width": 40,
+      "height": 42,
+      "price": 12,
+      "notes": ""
+    },
+      {
+        "code": ["30", "30d"],
+        "name": {
+          "uk": "Коробка (30 кг)",
+          "pl": "Pudełko (30 kg)",
+          "en": "Box (30 kg)"
+        },
+        "length": 70,
+        "width": 40,
+        "height": 42,
+        "price": 12,
+        "notes": ""
+      }
+]
