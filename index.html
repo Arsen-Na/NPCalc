@@ -6,19 +6,13 @@
 <title>Калькулятор ціни</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="stylesheet" href="styles.css">
-<style>
-.hidden{display:none}
-.mt-8{margin-top:8px}
-.mt-6{margin-top:6px}
-.ml-16{margin-left:16px}
-</style>
 </head>
 <body>
 <main class="card">
   <div class="lang-row">
     <div class="switch-wrap">
       <div class="theme-cell" id="themeCell">
-        <div class="switch" id="themeSwitch" role="switch" tabindex="0" aria-checked="false" aria-labelledby="themeLabel" title="Toggle theme">
+        <div class="switch" id="themeSwitch" role="switch" tabindex="0" aria-checked="false" aria-label="Toggle dark theme" title="Toggle theme">
           <div class="knob"></div>
         </div>
         <div class="theme-label" id="themeLabel">Dark</div>
@@ -37,11 +31,11 @@
   <p class="muted" id="intro">Введіть розміри в сантиметрах та фактичну вагу в кілограмах.</p>
  
   <div class="mode-row" id="modeRow">
-    <div class="mode-block" role="tablist" aria-label="Тип відправки">
+    <div class="mode-block" role="group" aria-label="Тип відправки">
       <div class="mode-cell">
         <div class="mode-toggle" id="modeToggleWrap">
-          <button id="btnParcel" class="mode-btn" aria-selected="true" role="tab">Посилка</button>
-          <button id="btnDocs" class="mode-btn" aria-selected="false" role="tab">Документи</button>
+          <button id="btnParcel" class="mode-btn" aria-pressed="true" role="button">Посилка</button>
+          <button id="btnDocs" class="mode-btn" aria-pressed="false" role="button">Документи</button>
         </div>
       </div>
     </div>
@@ -93,20 +87,21 @@
  
   <div class="result" aria-live="polite">
     <div class="note" id="formula-row">Формула: <span class="formula">(<span id="f-l">довжина</span> × <span id="f-w">ширина</span> × <span id="f-h">висота</span>) ÷ 4000</span></div>
-    <div class="mt-8"><strong id="label-volumetric">Об'ємна вага:</strong> <span id="volumetric">—</span> <span class="muted" id="unit-kg">kg</span></div>
-    <div class="mt-8"><strong id="label-billable">Платна вага:</strong> <span id="billable">—</span> <span class="muted" id="unit-kg-2">kg</span></div>
-    <div class="mt-8"><strong id="label-price">Ціна:</strong> <span id="price">—</span> <span class="muted" id="unit-currency">zł</span></div>
+    <div class="result-row"><strong class="result-label" id="label-volumetric">Об'ємна вага:</strong> <span class="result-value" id="volumetric">—</span> <span class="result-unit" id="unit-kg">kg</span></div>
+    <div class="result-row"><strong class="result-label" id="label-billable">Платна вага:</strong> <span class="result-value" id="billable">—</span> <span class="result-unit" id="unit-kg-2">kg</span></div>
+    <div class="result-row"><strong class="result-label" id="label-price">Ціна:</strong> <span class="result-value" id="price">—</span> <span class="result-unit" id="unit-currency">zł</span></div>
   </div>
  
-  <div id="customsBlock" class="customs" aria-live="polite">
+  <div id="customsBlock" class="customs" aria-live="polite" style="display:none">
     <strong id="customsText"></strong>
     <div id="customsDetails" class="muted mt-6"></div>
   </div>
  
-  <div id="presenceWarning" class="warning hidden" aria-live="polite"></div>
+  <div id="presenceWarning" class="warning" aria-live="polite" style="display:none"></div>
+  <div id="weightBlock" class="warning" aria-live="polite" style="display:none"></div>
 </main>
  
-<div class="modal-overlay hidden" id="pkgModal" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
+<div class="modal-overlay" id="pkgModal" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
   <div class="modal-box">
     <div class="modal-header">
       <p class="modal-title" id="pkgModalTitle">Оберіть пакування</p>
