@@ -17,9 +17,9 @@ const themeSwitch=el('themeSwitch'),themeLabel=el('themeLabel');
 const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
 
 const T={
- uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість (zł)',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'це 0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'<strong>Орієнтовна</strong> вартість митних платежів (орієнтуйтесь на ціну у євро)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',addressLabel:'Адресна доставка',pickupLabel:'Адресний забір',addrNoteSmall:(n)=>`додаткова плата за адресну доставку: ${n} zł`,addrNoteLarge:(n)=>`додаткова плата за адресну доставку: ${n} zł за кожні розпочаті 100 кг`,pickupNoteSmall:'додаткова плата за адресний забір: 10 zł',pickupNoteLarge:'додаткова плата за адресний забір: 25 zł за кожні розпочаті 100 кг',pkgBtnLabel:'Додати пакування',pkgModalTitle:'Оберіть пакування',pkgSearchPlaceholder:'Назва або код…',pkgPriceNote:(n,name)=>`пакування: +${n} zł (${name})`,heavySurchargeNote:'Додаткова плата за посилки від 25 кг до 70 кг: +150 zł',heavyBlockMsg:'Доставка посилок із такою вагою у дану країну не можлива',mode:{parcel:'Посилка',docs:'Документи'}},
- en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value (zl)',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'is 0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'<strong>Approximate</strong> customs payments (refer to the price in euros)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',addressLabel:'Address delivery',pickupLabel:'Address pickup',addrNoteSmall:(n)=>`address delivery surcharge: ${n} zł`,addrNoteLarge:(n)=>`address delivery surcharge: ${n} zł per each started 100 kg`,pickupNoteSmall:'address pickup surcharge: 10 zł',pickupNoteLarge:'address pickup surcharge: 25 zł per each started 100 kg',pkgBtnLabel:'Add packaging',pkgModalTitle:'Choose packaging',pkgSearchPlaceholder:'Name or code…',pkgPriceNote:(n,name)=>`packaging: +${n} zł (${name})`,heavySurchargeNote:'Additional charge for parcels from 25 kg to 70 kg: +150 zł',heavyBlockMsg:'Delivery of parcels with such weight to this country is not possible',mode:{parcel:'Parcel',docs:'Documents'}},
- pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa (zł)',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'to 0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'<strong>Przybliżony</strong> koszt opłat celnych (orientuj się ceną w euro)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',addressLabel:'Dostawa pod adres',pickupLabel:'Odbiór pod adresem',addrNoteSmall:(n)=>`dopłata za dostawę pod adres: ${n} zł`,addrNoteLarge:(n)=>`dopłata za dostawę pod adres: ${n} zł za każde rozpoczęte 100 kg`,pickupNoteSmall:'dopłata za odbiór pod adresem: 10 zł',pickupNoteLarge:'dopłata za odbiór pod adresem: 25 zł za każde rozpoczęte 100 kg',pkgBtnLabel:'Dodaj opakowanie',pkgModalTitle:'Wybierz opakowanie',pkgSearchPlaceholder:'Nazwa lub kod…',pkgPriceNote:(n,name)=>`opakowanie: +${n} zł (${name})`,heavySurchargeNote:'Dodatkowa opłata za przesyłki od 25 kg do 70 kg: +150 zł',heavyBlockMsg:'Dostawa paczek o takiej wadze do tego kraju jest niemożliwa',mode:{parcel:'Paczka',docs:'Dokumenty'}}};
+ uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість (zł)',declaredPlaceholder:'0',per10:'за 10 КГ',perExtra:'за кожен наступний КГ',insuranceText:'це 0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'<strong>Орієнтовна</strong> вартість митних платежів (орієнтуйтесь на ціну у євро)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',addressLabel:'Адресна доставка',pickupLabel:'Адресний забір',addrNoteSmall:(n)=>`додаткова плата за адресну доставку: ${n} zł`,addrNoteLarge:(n)=>`додаткова плата за адресну доставку: ${n} zł за кожні розпочаті 100 кг`,pickupNoteSmall:'додаткова плата за адресний забір: 10 zł',pickupNoteLarge:'додаткова плата за адресний забір: 25 zł за кожні розпочаті 100 кг',pkgBtnLabel:'Додати пакування',pkgModalTitle:'Оберіть пакування',pkgSearchPlaceholder:'Назва або код…',pkgPriceNote:(n,name)=>`пакування: +${n} zł (${name})`,heavySurchargeNote:'Додаткова плата за посилки від 25 кг до 70 кг: +150 zł',heavyBlockMsg:'Доставка посилок із такою вагою у дану країну не можлива',mode:{parcel:'Посилка',docs:'Документи'},feedbackBtn:'✉ Повідомити про помилку',feedbackTitle:'Зворотній зв\'язок',feedbackTypeBug:'🐛 Помилка',feedbackTypeIdea:'💡 Покращення',feedbackPlaceholder:'Опишіть проблему або ідею…',feedbackSubmit:'Надіслати',feedbackOk:'✓ Дякуємо! Повідомлення надіслано.',feedbackErr:'✗ Помилка. Спробуйте ще раз.'},
+ en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value (zl)',declaredPlaceholder:'0',per10:'for 10 KG',perExtra:'for each next KG',insuranceText:'is 0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'<strong>Approximate</strong> customs payments (refer to the price in euros)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',addressLabel:'Address delivery',pickupLabel:'Address pickup',addrNoteSmall:(n)=>`address delivery surcharge: ${n} zł`,addrNoteLarge:(n)=>`address delivery surcharge: ${n} zł per each started 100 kg`,pickupNoteSmall:'address pickup surcharge: 10 zł',pickupNoteLarge:'address pickup surcharge: 25 zł per each started 100 kg',pkgBtnLabel:'Add packaging',pkgModalTitle:'Choose packaging',pkgSearchPlaceholder:'Name or code…',pkgPriceNote:(n,name)=>`packaging: +${n} zł (${name})`,heavySurchargeNote:'Additional charge for parcels from 25 kg to 70 kg: +150 zł',heavyBlockMsg:'Delivery of parcels with such weight to this country is not possible',mode:{parcel:'Parcel',docs:'Documents'},feedbackBtn:'✉ Report an issue',feedbackTitle:'Feedback',feedbackTypeBug:'🐛 Bug',feedbackTypeIdea:'💡 Suggestion',feedbackPlaceholder:'Describe the issue or idea…',feedbackSubmit:'Send',feedbackOk:'✓ Thank you! Message sent.',feedbackErr:'✗ Error. Please try again.'},
+ pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa (zł)',declaredPlaceholder:'0',per10:'za 10 KG',perExtra:'za każdy kolejny KG',insuranceText:'to 0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'<strong>Przybliżony</strong> koszt opłat celnych (orientuj się ceną w euro)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',addressLabel:'Dostawa pod adres',pickupLabel:'Odbiór pod adresem',addrNoteSmall:(n)=>`dopłata za dostawę pod adres: ${n} zł`,addrNoteLarge:(n)=>`dopłata za dostawę pod adres: ${n} zł za każde rozpoczęte 100 kg`,pickupNoteSmall:'dopłata za odbiór pod adresem: 10 zł',pickupNoteLarge:'dopłata za odbiór pod adresem: 25 zł za każde rozpoczęte 100 kg',pkgBtnLabel:'Dodaj opakowanie',pkgModalTitle:'Wybierz opakowanie',pkgSearchPlaceholder:'Nazwa lub kod…',pkgPriceNote:(n,name)=>`opakowanie: +${n} zł (${name})`,heavySurchargeNote:'Dodatkowa opłata za przesyłki od 25 kg do 70 kg: +150 zł',heavyBlockMsg:'Dostawa paczek o takiej wadze do tego kraju jest niemożliwa',mode:{parcel:'Paczka',docs:'Dokumenty'},feedbackBtn:'✉ Zgłoś błąd',feedbackTitle:'Opinia',feedbackTypeBug:'🐛 Błąd',feedbackTypeIdea:'💡 Sugestia',feedbackPlaceholder:'Opisz problem lub pomysł…',feedbackSubmit:'Wyślij',feedbackOk:'✓ Dziękujemy! Wiadomość wysłana.',feedbackErr:'✗ Błąd. Spróbuj ponownie.'}};
 
 let countries=[],ratesMap={},presenceCountriesAllNames=[];
 const fallbackRate={s:100,m:150,over10:300,perKg:8};
@@ -81,6 +81,14 @@ function applyTranslations(lang){
   formulaRow.innerHTML=`${t.formulaLabel}: <span class="formula">(<span id="f-l">${t.formulaWords.l}</span> × <span id="f-w">${t.formulaWords.w}</span> × <span id="f-h">${t.formulaWords.h}</span>) ÷ 4000</span>`;
   fL=document.getElementById('f-l'); fW=document.getElementById('f-w'); fH=document.getElementById('f-h');
   updateModeButtonVisuals();
+  // feedback translations
+  const fbBtn = document.getElementById('feedbackBtn');
+  if(fbBtn){ const lbl = fbBtn.querySelector('#feedbackBtnLabel'); if(lbl) lbl.textContent = t.feedbackBtn; }
+  const fbmt = document.getElementById('feedbackModalTitle'); if(fbmt) fbmt.textContent = t.feedbackTitle;
+  const fbTypeBug = document.getElementById('fbTypeBug'); if(fbTypeBug) fbTypeBug.textContent = t.feedbackTypeBug;
+  const fbTypeIdea = document.getElementById('fbTypeIdea'); if(fbTypeIdea) fbTypeIdea.textContent = t.feedbackTypeIdea;
+  const fbText = document.getElementById('feedbackText'); if(fbText) fbText.placeholder = t.feedbackPlaceholder;
+  const fbSubmit = document.getElementById('feedbackSubmit'); if(fbSubmit) fbSubmit.textContent = t.feedbackSubmit;
 }
 
 async function loadPresenceCountries(){
@@ -439,3 +447,77 @@ document.addEventListener('DOMContentLoaded',async ()=>{
   await loadPackaging();
   setMode('parcel');
 });
+// ── Feedback ──────────────────────────────────────────
+
+
+const FEEDBACK_URL = 'https://telegram-bot.nakonechnyarsen.workers.dev';
+
+(function initFeedback() {
+  const btn        = document.getElementById('feedbackBtn');
+  const modal      = document.getElementById('feedbackModal');
+  const closeBtn   = document.getElementById('feedbackModalClose');
+  const submitBtn  = document.getElementById('feedbackSubmit');
+  const textarea   = document.getElementById('feedbackText');
+  const status     = document.getElementById('feedbackStatus');
+  const typeButtons = modal.querySelectorAll('[data-type]');
+  let selectedType = 'bug';
+
+  typeButtons.forEach(b => {
+    b.addEventListener('click', () => {
+      typeButtons.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      selectedType = b.dataset.type;
+    });
+  });
+
+  btn.addEventListener('click', () => {
+    modal.classList.add('modal-open');
+    textarea.focus();
+  });
+
+  function closeModal() {
+    modal.classList.remove('modal-open');
+    textarea.value = '';
+    status.style.display = 'none';
+    submitBtn.disabled = false;
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  submitBtn.addEventListener('click', async () => {
+    const message = textarea.value.trim();
+    if (!message) { textarea.focus(); return; }
+
+    submitBtn.disabled = true;
+    status.style.display = 'none';
+
+    try {
+      const res = await fetch(FEEDBACK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: selectedType,
+          message,
+          lang: document.getElementById('langSelect')?.value || '?',
+        }),
+      });
+
+      if (res.ok) {
+        status.textContent = (T[document.getElementById('langSelect')?.value] || T.uk).feedbackOk;
+        status.className = 'feedback-status ok';
+        status.style.display = 'block';
+        textarea.value = '';
+        setTimeout(closeModal, 2000);
+      } else {
+        throw new Error('server');
+      }
+    } catch {
+      status.textContent = (T[document.getElementById('langSelect')?.value] || T.uk).feedbackErr;
+      status.className = 'feedback-status err';
+      status.style.display = 'block';
+      submitBtn.disabled = false;
+    }
+  });
+})();
