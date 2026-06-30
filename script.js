@@ -520,4 +520,73 @@ const FEEDBACK_URL = 'https://telegram-bot.nakonechnyarsen.workers.dev';
       submitBtn.disabled = false;
     }
   });
+ 
+ // ===== Wake Lock =====
+
+let wakeLock = null;
+
+const wakeLockBtn = document.getElementById('wakeLockBtn');
+const wakeLockLabel = document.getElementById('wakeLockLabel');
+
+if (wakeLockBtn && 'wakeLock' in navigator) {
+
+  async function enableWakeLock() {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+
+      wakeLockLabel.textContent = '✅ Сон вимкнено';
+      wakeLockBtn.classList.add('wake-active');
+
+      localStorage.setItem('wakeLockEnabled', 'true');
+
+      wakeLock.addEventListener('release', () => {
+        wakeLock = null;
+        wakeLockLabel.textContent = '🔒 Не давати заснути';
+        wakeLockBtn.classList.remove('wake-active');
+      });
+
+    } catch (err) {
+      console.error('Wake Lock error:', err);
+    }
+  }
+
+  async function disableWakeLock() {
+    if (!wakeLock) return;
+
+    await wakeLock.release();
+
+    localStorage.removeItem('wakeLockEnabled');
+
+    wakeLockLabel.textContent = '🔒 Не давати заснути';
+    wakeLockBtn.classList.remove('wake-active');
+  }
+
+  wakeLockBtn.addEventListener('click', async () => {
+    if (wakeLock) {
+      await disableWakeLock();
+    } else {
+      await enableWakeLock();
+    }
+  });
+
+  document.addEventListener('visibilitychange', async () => {
+    if (
+      document.visibilityState === 'visible' &&
+      localStorage.getItem('wakeLockEnabled') === 'true'
+    ) {
+      try {
+        await enableWakeLock();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  });
+
+  if (localStorage.getItem('wakeLockEnabled') === 'true') {
+    enableWakeLock();
+  }
+
+} else if (wakeLockBtn) {
+  wakeLockBtn.style.display = 'none';
+}
 })();
