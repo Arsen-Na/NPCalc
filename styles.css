@@ -98,7 +98,10 @@ input[type=number],select,.country-input{width:100%;padding:8px 10px;margin-top:
 .feedback-status.err{background:#ffecec;color:var(--danger)}
 :root.dark .feedback-status.ok{background:#0d2b0f;color:#81c784}
 
-.feedback-btn.wake-active {
-  background: #22c55e;
-  color: white;
+#wakeLockBtn{min-width:210px;justify-content:center}
+.feedback-btn.wake-active,
+.feedback-btn.wake-active:hover{
+  background:#22c55e;
+  border-color:#22c55e;
+  color:#fff;
 }
