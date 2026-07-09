@@ -122,12 +122,12 @@
   {
     "country": "Австрія",
     "docs": 55,
-    "s": 65,
-    "m": 110,
-    "over10": 110,
-    "perKg": 9,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "s": 60,
+    "m": 80,
+    "over10": 80,
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Азербайджан",
@@ -386,8 +386,8 @@
     "m": 70,
     "over10": 70,
     "perKg": 2,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Данія",
@@ -451,13 +451,13 @@
   },
   {
     "country": "Естонія",
-    "docs": 45,
-    "s": 50,
-    "m": 70,
-    "over10": 70,
-    "perKg": 2,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "docs": 55,
+    "s": 60,
+    "m": 80,
+    "over10": 80,
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Есватіні",
@@ -511,13 +511,13 @@
   },
   {
     "country": "Франція",
-    "docs": 65,
-    "s": 70,
-    "m": 110,
-    "over10": 110,
-    "perKg": 6,
-    "courierTo30": 20,
-    "courierOver30": 25
+    "docs": 55,
+    "s": 60,
+    "m": 80,
+    "over10": 80,
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Габон",
@@ -681,13 +681,13 @@
   },
   {
     "country": "Іспанія",
-    "docs": 65,
+    "docs": 60,
     "s": 70,
-    "m": 110,
-    "over10": 110,
-    "perKg": 6,
-    "courierTo30": 15,
-    "courierOver30": 25
+    "m": 85,
+    "over10": 85,
+    "perKg": 5,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Гондурас",
@@ -1011,13 +1011,13 @@
   },
   {
     "country": "Литва",
-    "docs": 45,
-    "s": 50,
-    "m": 70,
-    "over10": 70,
-    "perKg": 2,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "docs": 55,
+    "s": 60,
+    "m": 80,
+    "over10": 80,
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Люксембург",
@@ -1031,13 +1031,13 @@
   },
   {
     "country": "Латвія",
-    "docs": 45,
-    "s": 50,
-    "m": 70,
-    "over10": 70,
-    "perKg": 2,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "docs": 55,
+    "s": 60,
+    "m": 80,
+    "over10": 80,
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Північна Македонія",
@@ -1191,13 +1191,13 @@
   },
   {
     "country": "Молдова",
-    "docs": 55,
-    "s": 65,
-    "m": 80,
-    "over10": 80,
-    "perKg": 4,
-    "courierTo30": 11,
-    "courierOver30": 27.5
+    "docs": 60,
+    "s": 70,
+    "m": 85,
+    "over10": 85,
+    "perKg": 5,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Монако",
@@ -1261,13 +1261,13 @@
   },
   {
     "country": "Нідерланди",
-    "docs": 70,
-    "s": 85,
-    "m": 100,
-    "over10": 100,
-    "perKg": 6,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "docs": 55,
+    "s": 60,
+    "m": 80,
+    "over10": 80,
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Німеччина",
@@ -1276,8 +1276,8 @@
     "m": 70,
     "over10": 70,
     "perKg": 2,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Нігер",
@@ -1421,13 +1421,13 @@
   },
   {
     "country": "Польща",
-    "docs": 12,
-    "s": 15,
-    "m": 16,
-    "over10": 16,
+    "docs": 13,
+    "s": 16,
+    "m": 17,
+    "over10": 17,
     "perKg": 0.5,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Пуерто-Рико",
@@ -1481,13 +1481,13 @@
   },
   {
     "country": "Румунія",
-    "docs": 45,
-    "s": 50,
-    "m": 70,
-    "over10": 70,
-    "perKg": 2,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "docs": 60,
+    "s": 70,
+    "m": 85,
+    "over10": 85,
+    "perKg": 5,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Руанда",
@@ -1651,13 +1651,13 @@
   },
   {
     "country": "Словаччина",
-    "docs": 45,
-    "s": 50,
+    "docs": 55,
+    "s": 60,
     "m": 80,
     "over10": 80,
-    "perKg": 3,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Словенія",
@@ -1841,13 +1841,13 @@
   },
   {
     "country": "Україна",
-    "docs": 55,
-    "s": 65,
-    "m": 80,
-    "over10": 80,
-    "perKg": 4,
-    "courierTo30": 11,
-    "courierOver30": 27.5
+    "docs": 60,
+    "s": 70,
+    "m": 85,
+    "over10": 85,
+    "perKg": 5,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Уругвай",
@@ -1901,23 +1901,23 @@
   },
   {
     "country": "Угорщина",
-    "docs": 45,
-    "s": 50,
+    "docs": 55,
+    "s": 60,
     "m": 80,
     "over10": 80,
-    "perKg": 3,
-    "courierTo30": 10,
-    "courierOver30": 25
+    "perKg": 4,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Велика Британія",
-    "docs": 80,
-    "s": 100,
-    "m": 150,
-    "over10": 150,
-    "perKg": 6,
-    "courierTo30": 15,
-    "courierOver30": 25
+    "docs": 60,
+    "s": 70,
+    "m": 85,
+    "over10": 85,
+    "perKg": 5,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Вʼєтнам",
@@ -1931,13 +1931,13 @@
   },
   {
     "country": "Італія",
-    "docs": 45,
-    "s": 50,
-    "m": 70,
-    "over10": 70,
-    "perKg": 3,
-    "courierTo30": 15,
-    "courierOver30": 25
+    "docs": 60,
+    "s": 70,
+    "m": 85,
+    "over10": 85,
+    "perKg": 5,
+    "courierTo30": 12,
+    "courierOver30": 30
   },
   {
     "country": "Кот-д’Івуар",
