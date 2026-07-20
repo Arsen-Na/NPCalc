@@ -552,13 +552,19 @@ submitBtn.addEventListener('click', async () => {
 
 // ===== Wake Lock (окремий, незалежний блок) =====
 (function initWakeLock() {
+  const wakeLockBtn = document.getElementById('wakeLockBtn');
+  if (!wakeLockBtn) return;
+
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (isMobile) {
+    wakeLockBtn.style.display = 'none';
+    return;
+  }
+
   let wakeLock = null;
   let noSleepVideo = null;
 
-  const wakeLockBtn = document.getElementById('wakeLockBtn');
   const wakeLockLabel = document.getElementById('wakeLockLabel');
-
-  if (!wakeLockBtn) return;
 
   function isActive() { return !!wakeLock || !!noSleepVideo; }
 
