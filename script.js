@@ -553,50 +553,92 @@ submitBtn.addEventListener('click', async () => {
 // ===== Wake Lock (окремий, незалежний блок) =====
 (function initWakeLock() {
   let wakeLock = null;
+  let noSleepVideo = null;
 
   const wakeLockBtn = document.getElementById('wakeLockBtn');
   const wakeLockLabel = document.getElementById('wakeLockLabel');
 
   if (!wakeLockBtn) return;
 
-  if (!('wakeLock' in navigator)) {
-    wakeLockBtn.style.display = 'none';
-    return;
+  function isActive() { return !!wakeLock || !!noSleepVideo; }
+
+  function setActiveUI(active) {
+    wakeLockLabel.textContent = wakeLockText(active);
+    wakeLockBtn.classList.toggle('wake-active', active);
   }
 
-  async function enableWakeLock() {
+  function enableNoSleepVideo() {
+    if (noSleepVideo) return;
     try {
-      wakeLock = await navigator.wakeLock.request('screen');
-
-      wakeLockLabel.textContent = wakeLockText(true);
-      wakeLockBtn.classList.add('wake-active');
-
-      localStorage.setItem('wakeLockEnabled', 'true');
-
-      wakeLock.addEventListener('release', () => {
-        wakeLock = null;
-        wakeLockLabel.textContent = wakeLockText(false);
-        wakeLockBtn.classList.remove('wake-active');
-      });
-
+      const canvas = document.createElement('canvas');
+      canvas.width = 1; canvas.height = 1;
+      canvas.getContext('2d').fillRect(0, 0, 1, 1);
+      const stream = canvas.captureStream(1);
+      const video = document.createElement('video');
+      video.setAttribute('playsinline', '');
+      video.muted = true;
+      video.srcObject = stream;
+      video.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none';
+      document.body.appendChild(video);
+      video.play().catch(err => console.error('NoSleep video play error:', err));
+      noSleepVideo = video;
     } catch (err) {
-      console.error('Wake Lock error:', err);
+      console.error('NoSleep video setup error:', err);
     }
   }
 
-  async function disableWakeLock() {
-    if (!wakeLock) return;
+  function disableNoSleepVideo() {
+    if (!noSleepVideo) return;
+    try {
+      noSleepVideo.pause();
+      if (noSleepVideo.srcObject) noSleepVideo.srcObject.getTracks().forEach(t => t.stop());
+      noSleepVideo.srcObject = null;
+      noSleepVideo.remove();
+    } catch (err) {
+      console.error('NoSleep video teardown error:', err);
+    }
+    noSleepVideo = null;
+  }
 
-    await wakeLock.release();
+  async function enableWakeLock() {
+    let wakeLockOk = false;
+
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLockOk = true;
+
+        wakeLock.addEventListener('release', () => {
+          wakeLock = null;
+          if (localStorage.getItem('wakeLockEnabled') === 'true' && !noSleepVideo) {
+            enableNoSleepVideo();
+          }
+          setActiveUI(isActive());
+        });
+      } catch (err) {
+        console.error('Wake Lock error:', err);
+      }
+    }
+
+    if (!wakeLockOk) enableNoSleepVideo();
+
+    setActiveUI(true);
+    localStorage.setItem('wakeLockEnabled', 'true');
+  }
+
+  async function disableWakeLock() {
+    if (wakeLock) {
+      try { await wakeLock.release(); } catch (err) { console.error(err); }
+      wakeLock = null;
+    }
+    disableNoSleepVideo();
 
     localStorage.removeItem('wakeLockEnabled');
-
-    wakeLockLabel.textContent = wakeLockText(false);
-    wakeLockBtn.classList.remove('wake-active');
+    setActiveUI(false);
   }
 
   wakeLockBtn.addEventListener('click', async () => {
-    if (wakeLock) {
+    if (isActive()) {
       await disableWakeLock();
     } else {
       await enableWakeLock();
@@ -606,7 +648,8 @@ submitBtn.addEventListener('click', async () => {
   document.addEventListener('visibilitychange', async () => {
     if (
       document.visibilityState === 'visible' &&
-      localStorage.getItem('wakeLockEnabled') === 'true'
+      localStorage.getItem('wakeLockEnabled') === 'true' &&
+      !isActive()
     ) {
       try {
         await enableWakeLock();
