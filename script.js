@@ -2,6 +2,7 @@ const el=id=>document.getElementById(id);
 const htmlEl=document.documentElement;
 const langSelect=el('langSelect');
 const lengthEl=el('length'),widthEl=el('width'),heightEl=el('height'),weightEl=el('weight');
+const wheelWidthEl=el('wheelWidth'),wheelAspectEl=el('wheelAspect'),wheelDiameterEl=el('wheelDiameter');
 const volumetricEl=el('volumetric'),billableEl=el('billable'),priceEl=el('price');
 const priceBreakdownEl=el('priceBreakdown');
 let fL=el('f-l'),fW=el('f-w'),fH=el('f-h');
@@ -10,17 +11,19 @@ const declaredEl=el('declaredValue');
 const customsBlock=el('customsBlock'),customsText=el('customsText'),customsDetails=el('customsDetails');
 const presenceWarning=el('presenceWarning');
 const weightBlock=el('weightBlock');
+const tireApproxWarning=el('tireApproxWarning');
 const unitKg=el('unit-kg'),unitKg2=el('unit-kg-2'),unitCurrency=el('unit-currency'),formulaRow=el('formula-row');
-const btnParcel=el('btnParcel'),btnDocs=el('btnDocs');
+const btnParcel=el('btnParcel'),btnDocs=el('btnDocs'),btnWheel=el('btnWheel');
+const parcelInputs=el('parcelInputs'),wheelInputs=el('wheelInputs');
 const addressWrap=el('addressWrap'),addressCheckbox=el('addressDelivery'),addressLabel=el('addressLabel');
 const pickupCheckbox=el('addressPickup'),pickupLabelEl=el('pickupLabel');
 const themeSwitch=el('themeSwitch'),themeLabel=el('themeLabel');
 const noticeLink='https://drive.google.com/file/d/1YHafkxkIv9wzWUNsmCvvVpN79mR9KZJe/view?usp=sharing';
 
 const T={
- uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість (zł)',declaredPlaceholder:'0',per10:'за 10 кг',perExtra:'за кожен наступний КГ',perExtraFmt:(rate)=>`за вагу понад 10 кг (по ${rate} zł за кг)`,insuranceText:'це 0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'<strong>Орієнтовна</strong> вартість митних платежів (орієнтуйтесь на ціну у євро)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',addressLabel:'Адресна доставка',pickupLabel:'Адресний забір',addrLabelSmall:'додаткова плата за адресну доставку',addrLabelLargeFmt:(rate)=>`за адресну доставку понад 30 кг (по ${rate} zł за кожні розпочаті 100 кг)`,pickupLabelSmall:'додаткова плата за адресний забір',pickupLabelLargeFmt:(rate)=>`за адресний забір понад 30 кг (по ${rate} zł за кожні розпочаті 100 кг)`,pkgBtnLabel:'Додати пакування',pkgModalTitle:'Оберіть пакування',pkgSearchPlaceholder:'Назва або код…',pkgPriceLabel:(name)=>`пакування (${name})`,heavySurchargeLabel:'Додаткова плата за посилки від 25 кг до 70 кг',heavyBlockMsg:'Доставка посилок із такою вагою у дану країну не можлива',mode:{parcel:'Посилка',docs:'Документи'},feedbackBtn:'✉ Повідомити про помилку',feedbackTitle:'Зворотній зв\'язок',feedbackTypeBug:'🐛 Помилка',feedbackTypeIdea:'💡 Покращення',feedbackPlaceholder:'Опишіть проблему або ідею…',feedbackSubmit:'Надіслати',feedbackOk:'✓ Дякуємо! Повідомлення надіслано.',feedbackErr:'✗ Помилка. Спробуйте ще раз.',wakeLockLabel:'🔒 Не давати заснути',wakeLockActive:'✅ Сон вимкнено'},
- en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value (zl)',declaredPlaceholder:'0',per10:'for 10 kg',perExtra:'for each next KG',perExtraFmt:(rate)=>`for weight above 10 kg (${rate} zł per kg)`,insuranceText:'is 0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'<strong>Approximate</strong> customs payments (refer to the price in euros)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',addressLabel:'Address delivery',pickupLabel:'Address pickup',addrLabelSmall:'address delivery surcharge',addrLabelLargeFmt:(rate)=>`for address delivery above 30 kg (${rate} zł per each started 100 kg)`,pickupLabelSmall:'address pickup surcharge',pickupLabelLargeFmt:(rate)=>`for address pickup above 30 kg (${rate} zł per each started 100 kg)`,pkgBtnLabel:'Add packaging',pkgModalTitle:'Choose packaging',pkgSearchPlaceholder:'Name or code…',pkgPriceLabel:(name)=>`packaging (${name})`,heavySurchargeLabel:'Additional charge for parcels from 25 kg to 70 kg',heavyBlockMsg:'Delivery of parcels with such weight to this country is not possible',mode:{parcel:'Parcel',docs:'Documents'},feedbackBtn:'✉ Report an issue',feedbackTitle:'Feedback',feedbackTypeBug:'🐛 Bug',feedbackTypeIdea:'💡 Suggestion',feedbackPlaceholder:'Describe the issue or idea…',feedbackSubmit:'Send',feedbackOk:'✓ Thank you! Message sent.',feedbackErr:'✗ Error. Please try again.',wakeLockLabel:'🔒 Keep screen awake',wakeLockActive:'✅ Sleep disabled'},
- pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa (zł)',declaredPlaceholder:'0',per10:'za 10 kg',perExtra:'za każdy kolejny KG',perExtraFmt:(rate)=>`za wagę powyżej 10 kg (po ${rate} zł za kg)`,insuranceText:'to 0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'<strong>Przybliżony</strong> koszt opłat celnych (orientuj się ceną w euro)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',addressLabel:'Dostawa pod adres',pickupLabel:'Odbiór pod adresem',addrLabelSmall:'dopłata za dostawę pod adres',addrLabelLargeFmt:(rate)=>`za dostawę pod adres powyżej 30 kg (po ${rate} zł za każde rozpoczęte 100 kg)`,pickupLabelSmall:'dopłata za odbiór pod adresem',pickupLabelLargeFmt:(rate)=>`za odbiór pod adresem powyżej 30 kg (po ${rate} zł za każde rozpoczęte 100 kg)`,pkgBtnLabel:'Dodaj opakowanie',pkgModalTitle:'Wybierz opakowanie',pkgSearchPlaceholder:'Nazwa lub kod…',pkgPriceLabel:(name)=>`opakowanie (${name})`,heavySurchargeLabel:'Dodatkowa opłata za przesyłki od 25 kg do 70 kg',heavyBlockMsg:'Dostawa paczek o takiej wadze do tego kraju jest niemożliwa',mode:{parcel:'Paczka',docs:'Dokumenty'},feedbackBtn:'✉ Zgłoś błąd',feedbackTitle:'Opinia',feedbackTypeBug:'🐛 Błąd',feedbackTypeIdea:'💡 Sugestia',feedbackPlaceholder:'Opisz problem lub pomysł…',feedbackSubmit:'Wyślij',feedbackOk:'✓ Dziękujemy! Wiadomość wysłana.',feedbackErr:'✗ Błąd. Spróbuj ponownie.',wakeLockLabel:'🔒 Nie usypiaj ekranu',wakeLockActive:'✅ Uśpienie wyłączone'}};
+ uk:{langLabel:'Мова',title:'Калькулятор ціни',intro:"Введіть розміри в сантиметрах та фактичну вагу в кілограмах.",introTire:"Введіть розміри автомобільної шини у форматі 205/55 R16 у відповідні поля.",length:'Довжина (cm)',width:'Ширина (cm)',height:'Висота (cm)',wheelWidth:'Ширина (мм)',wheelAspect:'Висота (%)',wheelDiameter:'Діаметр (дюйми)',weight:'Фактична вага (kg)',country:"Країна одержувача",mobilePlaceholder:'Вибери країну',formulaWords:{l:'довжина',w:'ширина',h:'висота'},formulaLabel:'Формула',volumetric:"Об'ємна вага:",billable:"Платна вага:",price:"Ціна:",unitKg:'kg',currency:'PLN',declaredLabel:'Оціночна вартість (zł)',declaredPlaceholder:'0',per10:'за 10 кг',perExtra:'за кожен наступний КГ',perExtraFmt:(rate)=>`за вагу понад 10 кг (по ${rate} zł за кг)`,insuranceText:'це 0.5% \"страхування\" від ОВ',andSeparator:', ',customsTitle:'<strong>Орієнтовна</strong> вартість митних платежів (орієнтуйтесь на ціну у євро)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR або ${uah} UAH або ${pln} PLN`,presenceNotice:'Зверніть увагу, що доставка до даної країни відбувається партнером UPS авіа шляхом. Ознайомтесь із особливостями такої доставки у ',presenceLinkText:'1.1.3.21 СОК Перевірка відправлення на наявність забороненого вмісту з авіа-доставкою UPS',addressLabel:'Адресна доставка',pickupLabel:'Адресний забір',addrLabelSmall:'додаткова плата за адресну доставку',addrLabelLargeFmt:(rate)=>`за адресну доставку понад 30 кг (по ${rate} zł за кожні розпочаті 100 кг)`,pickupLabelSmall:'додаткова плата за адресний забір',pickupLabelLargeFmt:(rate)=>`за адресний забір понад 30 кг (по ${rate} zł за кожні розпочаті 100 кг)`,pkgBtnLabel:'Додати пакування',pkgModalTitle:'Оберіть пакування',pkgSearchPlaceholder:'Назва або код…',pkgPriceLabel:(name)=>`пакування (${name})`,heavySurchargeLabel:'Додаткова плата за посилки від 25 кг до 70 кг',heavyBlockMsg:'Доставка посилок із такою вагою у дану країну не можлива',tireApproxWarning:'Зверніть увагу, що розрахунок ціни відправки є лише приблизним, виходячи із розмірів. Ціна може відрізнятись, якщо фактична вага буде більша, ніж об\'ємна.',mode:{parcel:'Посилка',docs:'Документи',wheel:'Шина'},feedbackBtn:'✉ Повідомити про помилку',feedbackTitle:'Зворотній зв\'язок',feedbackTypeBug:'🐛 Помилка',feedbackTypeIdea:'💡 Покращення',feedbackPlaceholder:'Опишіть проблему або ідею…',feedbackSubmit:'Надіслати',feedbackOk:'✓ Дякуємо! Повідомлення надіслано.',feedbackErr:'✗ Помилка. Спробуйте ще раз.',wakeLockLabel:'🔒 Не давати заснути',wakeLockActive:'✅ Сон вимкнено'},
+ en:{langLabel:'Language',title:'Price calculator',intro:"Enter dimensions in centimetres and actual weight in kilograms.",introTire:"Enter the car tire size in the format 205/55 R16 into the corresponding fields.",length:'Length (cm)',width:'Width (cm)',height:'Height (cm)',wheelWidth:'Width (mm)',wheelAspect:'Height (%)',wheelDiameter:'Diameter (inches)',weight:'Actual weight (kg)',country:"Destination country",mobilePlaceholder:'Choose country',formulaWords:{l:'length',w:'width',h:'height'},formulaLabel:'Formula',volumetric:"Volumetric weight:",billable:"Billable weight:",price:"Price:",unitKg:'kg',currency:'PLN',declaredLabel:'Estimated value (zl)',declaredPlaceholder:'0',per10:'for 10 kg',perExtra:'for each next KG',perExtraFmt:(rate)=>`for weight above 10 kg (${rate} zł per kg)`,insuranceText:'is 0.5% \"insurance\" of EV',andSeparator:', ',customsTitle:'<strong>Approximate</strong> customs payments (refer to the price in euros)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR or ${uah} UAH or ${pln} PLN`,presenceNotice:'Please note that delivery to this country is provided by UPS partner via air. See specifics in ',presenceLinkText:'1.1.3.21 SOK Shipment check for prohibited content with UPS air delivery',addressLabel:'Address delivery',pickupLabel:'Address pickup',addrLabelSmall:'address delivery surcharge',addrLabelLargeFmt:(rate)=>`for address delivery above 30 kg (${rate} zł per each started 100 kg)`,pickupLabelSmall:'address pickup surcharge',pickupLabelLargeFmt:(rate)=>`for address pickup above 30 kg (${rate} zł per each started 100 kg)`,pkgBtnLabel:'Add packaging',pkgModalTitle:'Choose packaging',pkgSearchPlaceholder:'Name or code…',pkgPriceLabel:(name)=>`packaging (${name})`,heavySurchargeLabel:'Additional charge for parcels from 25 kg to 70 kg',heavyBlockMsg:'Delivery of parcels with such weight to this country is not possible',tireApproxWarning:'Please note that the shipping price calculation is only approximate based on dimensions. The price may differ if the actual weight is greater than the volumetric weight.',mode:{parcel:'Parcel',docs:'Documents',wheel:'Tire'},feedbackBtn:'✉ Report an issue',feedbackTitle:'Feedback',feedbackTypeBug:'🐛 Bug',feedbackTypeIdea:'💡 Suggestion',feedbackPlaceholder:'Describe the issue or idea…',feedbackSubmit:'Send',feedbackOk:'✓ Thank you! Message sent.',feedbackErr:'✗ Error. Please try again.',wakeLockLabel:'🔒 Keep screen awake',wakeLockActive:'✅ Sleep disabled'},
+ pl:{langLabel:'Język',title:'Kalkulator ceny',intro:"Wprowadź wymiary w centymetrach i rzeczywistą wagę w kilogramach.",introTire:"Wprowadź rozmiar opony samochodowej w formacie 205/55 R16 w odpowiednie pola.",length:'Długość (cm)',width:'Szerokość (cm)',height:'Wysokość (cm)',wheelWidth:'Szerokość (mm)',wheelAspect:'Wysokość (%)',wheelDiameter:'Średnica (cale)',weight:'Rzeczywista waga (kg)',country:"Kraj odbiorcy",mobilePlaceholder:'Wybierz kraj',formulaWords:{l:'długość',w:'szerokość',h:'wysokość'},formulaLabel:'Formuła',volumetric:"Waga objętościowa:",billable:"Waga obciążalna:",price:"Cena:",unitKg:'kg',currency:'PLN',declaredLabel:'Wartość szacunkowa (zł)',declaredPlaceholder:'0',per10:'za 10 kg',perExtra:'za każdy kolejny KG',perExtraFmt:(rate)=>`za wagę powyżej 10 kg (po ${rate} zł za kg)`,insuranceText:'to 0.5% \"ubezpieczenie\" od WS',andSeparator:', ',customsTitle:'<strong>Przybliżony</strong> koszt opłat celnych (orientuj się ceną w euro)',customsDetailFmt:(eur,uah,pln)=>` ${eur} EUR lub ${uah} UAH lub ${pln} PLN`,presenceNotice:'Zwróć uwagę, że dostawa do tego kraju odbywa się przez partnera UPS drogą lotniczą. Zapoznaj się ze szczegółami w ',presenceLinkText:'1.1.3.21 SOK Sprawdzenie przesyłki pod kątem zabronionej zawartości przy dostawie UPS (lotniczo)',addressLabel:'Dostawa pod adres',pickupLabel:'Odbiór pod adresem',addrLabelSmall:'dopłata za dostawę pod adres',addrLabelLargeFmt:(rate)=>`za dostawę pod adres powyżej 30 kg (po ${rate} zł za każde rozpoczęte 100 kg)`,pickupLabelSmall:'dopłata za odbiór pod adresem',pickupLabelLargeFmt:(rate)=>`za odbiór pod adresem powyżej 30 kg (po ${rate} zł za każde rozpoczęte 100 kg)`,pkgBtnLabel:'Dodaj opakowanie',pkgModalTitle:'Wybierz opakowanie',pkgSearchPlaceholder:'Nazwa lub kod…',pkgPriceLabel:(name)=>`opakowanie (${name})`,heavySurchargeLabel:'Dodatkowa opłata za przesyłki od 25 kg do 70 kg',heavyBlockMsg:'Dostawa paczek o takiej wadze do tego kraju jest niemożliwa',tireApproxWarning:'Zwróć uwagę, że obliczenie ceny wysyłki jest tylko przybliżone na podstawie wymiarów. Cena może się różnić, jeśli rzeczywista waga będzie większa niż waga objętościowa.',mode:{parcel:'Paczka',docs:'Dokumenty',wheel:'Opona'},feedbackBtn:'✉ Zgłoś błąd',feedbackTitle:'Opinia',feedbackTypeBug:'🐛 Błąd',feedbackTypeIdea:'💡 Sugestia',feedbackPlaceholder:'Opisz problem lub pomysł…',feedbackSubmit:'Wyślij',feedbackOk:'✓ Dziękujemy! Wiadomość wysłana.',feedbackErr:'✗ Błąd. Spróbuj ponownie.',wakeLockLabel:'🔒 Nie usypiaj ekranu',wakeLockActive:'✅ Uśpienie wyłączone'}};
 
 let countries=[],ratesMap={},presenceCountriesAllNames=[];
 const fallbackRate={s:100,m:150,over10:300,perKg:8};
@@ -30,6 +33,25 @@ const formatNumber=v=>((Math.round(v*100)/100).toFixed(2));
 const normalize=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
 
 function wakeLockText(active){ const t=T[htmlEl.lang]||T.uk; return active ? t.wakeLockActive : t.wakeLockLabel; }
+
+function updateIntroText(){ const t=T[htmlEl.lang]||T.uk; el('intro').textContent = (sendMode==='wheel') ? t.introTire : t.intro; }
+
+function convertTireSize(widthMm, aspectRatio, diameterInches){
+  if(!widthMm || !aspectRatio || !diameterInches) return null;
+  const wMm = parseFloat(widthMm);
+  const aRatio = parseFloat(aspectRatio);
+  const dInches = parseFloat(diameterInches);
+  if(!Number.isFinite(wMm) || !Number.isFinite(aRatio) || !Number.isFinite(dInches)) return null;
+  
+  const sidewallMm = wMm * (aRatio / 100);
+  const rimDiameterMm = dInches * 25.4;
+  const overallDiameterMm = rimDiameterMm + 2 * sidewallMm;
+  
+  const diameterCm = overallDiameterMm / 10;
+  const widthCm = wMm / 10;
+  
+  return { lengthCm: diameterCm, widthCm: widthCm, heightCm: diameterCm };
+}
 
 let FX={EUR_PLN:null,EUR_UAH:null,lastFetched:0},FX_TTL=1000*60*30;
 async function fetchFxRates(){
@@ -59,10 +81,13 @@ function applyTranslations(lang){
   htmlEl.lang=lang;
   el('label-lang').textContent=t.langLabel;
   el('title').textContent=t.title;
-  el('intro').textContent=t.intro;
+  updateIntroText();
   el('label-length').textContent=t.length;
   el('label-width').textContent=t.width;
   el('label-height').textContent=t.height;
+  el('label-wheel-width').textContent=t.wheelWidth;
+  el('label-wheel-aspect').textContent=t.wheelAspect;
+  el('label-wheel-diameter').textContent=t.wheelDiameter;
   el('label-weight').textContent=t.weight;
   el('label-country').textContent=t.country;
   el('label-countrySelect').textContent=t.country;
@@ -74,17 +99,15 @@ function applyTranslations(lang){
   const mobilePh = el('mobile-placeholder'); if(mobilePh) mobilePh.textContent = t.mobilePlaceholder;
   fL.textContent=t.formulaWords.l; fW.textContent=t.formulaWords.w; fH.textContent=t.formulaWords.h;
   el('label-declared').textContent=t.declaredLabel; declaredEl.placeholder=t.declaredPlaceholder;
-  btnParcel.textContent=t.mode.parcel; btnDocs.textContent=t.mode.docs;
+  btnParcel.textContent=t.mode.parcel; btnDocs.textContent=t.mode.docs; btnWheel.textContent=t.mode.wheel;
   addressLabel.textContent = t.addressLabel;
   pickupLabelEl.textContent = t.pickupLabel;
-  // refresh packaging button label if no packaging selected
   if(!selectedPackaging){ el('pkgBtnLabel').textContent = t.pkgBtnLabel; }
   el('pkgModalTitle').textContent=t.pkgModalTitle;
   el('pkgSearch').placeholder = t.pkgSearchPlaceholder;
   formulaRow.innerHTML=`${t.formulaLabel}: <span class="formula">(<span id="f-l">${t.formulaWords.l}</span> × <span id="f-w">${t.formulaWords.w}</span> × <span id="f-h">${t.formulaWords.h}</span>) ÷ 4000</span>`;
   fL=document.getElementById('f-l'); fW=document.getElementById('f-w'); fH=document.getElementById('f-h');
   updateModeButtonVisuals();
-  // feedback translations
   const fbBtn = document.getElementById('feedbackBtn');
   if(fbBtn){ const lbl = fbBtn.querySelector('#feedbackBtnLabel'); if(lbl) lbl.textContent = t.feedbackBtn; }
   const fbmt = document.getElementById('feedbackModalTitle'); if(fbmt) fbmt.textContent = t.feedbackTitle;
@@ -92,9 +115,9 @@ function applyTranslations(lang){
   const fbTypeIdea = document.getElementById('fbTypeIdea'); if(fbTypeIdea) fbTypeIdea.textContent = t.feedbackTypeIdea;
   const fbText = document.getElementById('feedbackText'); if(fbText) fbText.placeholder = t.feedbackPlaceholder;
   const fbSubmit = document.getElementById('feedbackSubmit'); if(fbSubmit) fbSubmit.textContent = t.feedbackSubmit;
-  // wake lock button translation
   const wlBtn = el('wakeLockBtn'), wlLabel = el('wakeLockLabel');
   if(wlBtn && wlLabel){ wlLabel.textContent = wakeLockText(wlBtn.classList.contains('wake-active')); }
+  if(tireApproxWarning.style.display==='block'){ tireApproxWarning.textContent = t.tireApproxWarning; }
 }
 
 async function loadPresenceCountries(){
@@ -135,26 +158,37 @@ function syncCountryToSelect(){ const r=resolveCountry(countryInput.value); if(r
 function syncSelectToInput(){ if(countrySelect.value) countryInput.value=countrySelect.value; }
 
 let sendMode='parcel';
-function updateModeButtonVisuals(){ const a='active'; if(sendMode==='docs'){ btnDocs.classList.add(a); btnDocs.setAttribute('aria-pressed','true'); btnParcel.classList.remove(a); btnParcel.setAttribute('aria-pressed','false'); } else { btnParcel.classList.add(a); btnParcel.setAttribute('aria-pressed','true'); btnDocs.classList.remove(a); btnDocs.setAttribute('aria-pressed','false'); } }
+function updateModeButtonVisuals(){ const a='active'; if(sendMode==='wheel'){ btnWheel.classList.add(a); btnWheel.setAttribute('aria-pressed','true'); btnParcel.classList.remove(a); btnParcel.setAttribute('aria-pressed','false'); btnDocs.classList.remove(a); btnDocs.setAttribute('aria-pressed','false'); } else if(sendMode==='docs'){ btnDocs.classList.add(a); btnDocs.setAttribute('aria-pressed','true'); btnParcel.classList.remove(a); btnParcel.setAttribute('aria-pressed','false'); btnWheel.classList.remove(a); btnWheel.setAttribute('aria-pressed','false'); } else { btnParcel.classList.add(a); btnParcel.setAttribute('aria-pressed','true'); btnDocs.classList.remove(a); btnDocs.setAttribute('aria-pressed','false'); btnWheel.classList.remove(a); btnWheel.setAttribute('aria-pressed','false'); } }
 
 function setMode(mode){
-  // clear packaging if switching to docs or if switching away from docs with envelope selected
-  if(mode === 'docs' && selectedPackaging) clearPackaging();
-  if(mode !== 'docs' && selectedPackaging){
+  if((mode === 'docs' || mode === 'wheel') && selectedPackaging) clearPackaging();
+  if(mode !== 'docs' && mode !== 'wheel' && selectedPackaging){
     const codes = Array.isArray(selectedPackaging.code) ? selectedPackaging.code : [selectedPackaging.code];
     const isDocEnvelope = codes.some(c => String(c) === '7' || String(c) === '7v');
     if(isDocEnvelope) clearPackaging();
   }
   sendMode=mode;
-  const docsFixed={length:35,width:25,height:2,weight:1};
-  if(mode==='docs'){
+  
+  el('pkgBtn').style.display = (mode==='wheel') ? 'none' : '';
+  
+  if(mode==='wheel'){
+    parcelInputs.style.display='none';
+    wheelInputs.style.display='flex';
+    [lengthEl,widthEl,heightEl,weightEl].forEach(i=>{i.readOnly=false;i.removeAttribute('tabIndex');i.removeAttribute('aria-disabled');});
+  } else if(mode==='docs'){
+    parcelInputs.style.display='flex';
+    wheelInputs.style.display='none';
+    const docsFixed={length:35,width:25,height:2,weight:1};
     lengthEl.value=docsFixed.length; widthEl.value=docsFixed.width; heightEl.value=docsFixed.height; weightEl.value=docsFixed.weight;
     [lengthEl,widthEl,heightEl,weightEl].forEach(i=>{i.readOnly=true;i.tabIndex=-1;i.setAttribute('aria-disabled','true');});
-  }else{
+  } else {
+    parcelInputs.style.display='flex';
+    wheelInputs.style.display='none';
     [lengthEl,widthEl,heightEl,weightEl].forEach(i=>{i.readOnly=false;i.removeAttribute('tabIndex');i.removeAttribute('aria-disabled');});
     lengthEl.value=''; widthEl.value=''; heightEl.value=''; weightEl.value='';
   }
   updateModeButtonVisuals();
+  updateIntroText();
   compute();
 }
 
@@ -168,7 +202,20 @@ function calcAddressSurcharge(billable, checked, r){
 
 async function compute(){
   const t=T[htmlEl.lang]||T.uk;
-  const L=parseNumber(lengthEl), W=parseNumber(widthEl), H=parseNumber(heightEl);
+  let L, W, H;
+  
+  if(sendMode==='wheel'){
+    const tireData = convertTireSize(wheelWidthEl.value, wheelAspectEl.value, wheelDiameterEl.value);
+    if(!tireData){ volumetricEl.textContent='—'; billableEl.textContent=priceEl.textContent='—'; priceBreakdownEl.innerHTML=''; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); hideTireApproxWarning(); return; }
+    L = tireData.lengthCm;
+    W = tireData.widthCm;
+    H = tireData.heightCm;
+  } else {
+    L=parseNumber(lengthEl);
+    W=parseNumber(widthEl);
+    H=parseNumber(heightEl);
+  }
+  
   const vol = (L>0 && W>0 && H>0) ? (L*W*H)/4000 : 0;
   volumetricEl.textContent = vol>0 ? formatNumber(vol) : '—';
   const actual = parseNumber(weightEl);
@@ -176,12 +223,12 @@ async function compute(){
   if(vol>0 && actual>0) billable = Math.max(vol, actual);
   else if(vol>0) billable = vol;
   else if(actual>0) billable = actual;
-  else { volumetricEl.textContent='—'; billableEl.textContent=priceEl.textContent='—'; priceBreakdownEl.innerHTML=''; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); return; }
+  else { volumetricEl.textContent='—'; billableEl.textContent=priceEl.textContent='—'; priceBreakdownEl.innerHTML=''; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); hideTireApproxWarning(); return; }
   billableEl.textContent = formatNumber(billable);
 
   const userInput = countryInput.value || countrySelect.value || '';
   const destResolved = resolveCountry(userInput);
-  if(!destResolved){ priceEl.textContent='\u2014'; priceBreakdownEl.innerHTML=''; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); return; }
+  if(!destResolved){ priceEl.textContent='\u2014'; priceBreakdownEl.innerHTML=''; hideCustoms(); hideWarning(); hideAddress(); hideWeightBlock(); if(sendMode==='wheel'){ showTireApproxWarning(t); } else { hideTireApproxWarning(); } return; }
   const r = ratesMap[ destResolved ] || fallbackRate;
   let basePrice, priceFor10kg=null, perExtraKgRate=null, extraKgAmount=null;
   if(sendMode==='docs' && r && typeof r.docs!=='undefined'){ basePrice = Number(r.docs); }
@@ -257,8 +304,7 @@ async function compute(){
 
   if(destResolved && !inPresenceFlag) showWarning(t); else hideWarning();
 
-  // Heavy parcel surcharge / block (non-presence countries, parcel mode only)
-  if(!inPresenceFlag && sendMode==='parcel'){
+  if(!inPresenceFlag && (sendMode==='parcel' || sendMode==='wheel')){
     if(billable > 70){
       priceEl.textContent = '—';
       priceBreakdownEl.innerHTML='';
@@ -270,6 +316,12 @@ async function compute(){
     }
   } else {
     hideWeightBlock();
+  }
+
+  if(sendMode==='wheel'){
+    showTireApproxWarning(t);
+  } else {
+    hideTireApproxWarning();
   }
 }
 
@@ -309,8 +361,11 @@ function hideAddress(){
 function hideCustoms(){ customsBlock.style.display='none'; customsText.innerHTML=''; customsDetails.textContent=''; }
 function showWarning(t){ presenceWarning.style.display='block'; presenceWarning.innerHTML = `${t.presenceNotice}<a href="${noticeLink}" target="_blank" rel="noopener noreferrer">${t.presenceLinkText}</a>`; }
 function hideWarning(){ presenceWarning.style.display='none'; presenceWarning.innerHTML=''; }
+function showTireApproxWarning(t){ tireApproxWarning.style.display='block'; tireApproxWarning.textContent = t.tireApproxWarning; }
+function hideTireApproxWarning(){ tireApproxWarning.style.display='none'; tireApproxWarning.textContent=''; }
 
-[lengthEl,widthEl,heightEl,weightEl,declaredEl].forEach(i=>i.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk; if(fL) fL.textContent = lengthEl.value || t.formulaWords.l; if(fW) fW.textContent = widthEl.value || t.formulaWords.w; if(fH) fH.textContent = heightEl.value || t.formulaWords.h; compute();},120)));
+[lengthEl,widthEl,heightEl,weightEl].forEach(i=>i.addEventListener('input',debounce(()=>{const t=T[htmlEl.lang]||T.uk; if(fL) fL.textContent = lengthEl.value || t.formulaWords.l; if(fW) fW.textContent = widthEl.value || t.formulaWords.w; if(fH) fH.textContent = heightEl.value || t.formulaWords.h; compute();},120)));
+[wheelWidthEl,wheelAspectEl,wheelDiameterEl].forEach(i=>i.addEventListener('input',debounce(compute,120)));
 countryInput.addEventListener('input',debounce(()=>{syncCountryToSelect();compute();},120));
 countryInput.addEventListener('change',()=>{syncCountryToSelect();compute()});
 countrySelect.addEventListener('change',()=>{syncSelectToInput();compute()});
@@ -336,6 +391,7 @@ pickupCheckbox.addEventListener('change',()=>compute());
 
 btnParcel.addEventListener('click',()=>setMode('parcel'));
 btnDocs.addEventListener('click',()=>setMode('docs'));
+btnWheel.addEventListener('click',()=>setMode('wheel'));
 
 langSelect.addEventListener('change',async e=>{ const lang=e.target.value; applyTranslations(lang); await loadRatesForLang(lang); });
 
@@ -348,7 +404,6 @@ function setTheme(isDark){
 themeSwitch.addEventListener('click',()=>{ const on = themeSwitch.classList.toggle('on'); setTheme(on); });
 themeSwitch.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); const on = themeSwitch.classList.toggle('on'); setTheme(on); } });
 
-// ── Packaging ──────────────────────────────────────────────
 let packagingData = [];
 let selectedPackaging = null;
 
@@ -371,7 +426,6 @@ function renderPkgList(query){
   const list = el('pkgList');
   const q = (query||'').trim().toLowerCase();
   const filtered = packagingData.filter(p => {
-    // Filter by mode: docs mode only shows envelope with codes 7 or 7v
     const codes = Array.isArray(p.code) ? p.code : [p.code];
     if(sendMode === 'docs'){
       const isDocEnvelope = codes.some(c => String(c) === '7' || String(c) === '7v');
@@ -415,17 +469,14 @@ function closePkgModal(){
 function selectPackaging(p){
   selectedPackaging = p;
   closePkgModal();
-  // fill dimensions and lock
   lengthEl.value = p.length; widthEl.value = p.width; heightEl.value = p.height;
   [lengthEl, widthEl, heightEl].forEach(i=>{
     i.readOnly = true; i.tabIndex = -1; i.setAttribute('aria-disabled','true');
   });
-  // update button
   el('pkgBtn').classList.add('selected');
   el('pkgBtnIcon').textContent = '📦';
   el('pkgBtnLabel').textContent = pkgName(p) + ` (${p.length}×${p.width}×${p.height} cm)`;
   el('pkgClear').style.display = '';
-  // update formula
   if(fL) fL.textContent = p.length;
   if(fW) fW.textContent = p.width;
   if(fH) fH.textContent = p.height;
@@ -462,8 +513,6 @@ el('pkgModal').addEventListener('click', e => { if(e.target === el('pkgModal')) 
 el('pkgSearch').addEventListener('input', e => renderPkgList(e.target.value));
 document.addEventListener('keydown', e => { if(e.key==='Escape' && el('pkgModal').classList.contains('modal-open')) closePkgModal(); });
 
-// ── end packaging ───────────────────────────────────────────
-
 document.addEventListener('DOMContentLoaded',async ()=>{
   const saved = (()=>{ try{return localStorage.getItem('npcalc_dark')}catch(e){return null} })();
   const preferDark = saved===null ? (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches) : saved==='1';
@@ -475,8 +524,6 @@ document.addEventListener('DOMContentLoaded',async ()=>{
   await loadPackaging();
   setMode('parcel');
 });
-// ── Feedback ──────────────────────────────────────────
-
 
 const FEEDBACK_URL = 'https://telegram-bot.nakonechnyarsen.workers.dev';
 
@@ -514,7 +561,7 @@ const FEEDBACK_URL = 'https://telegram-bot.nakonechnyarsen.workers.dev';
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-submitBtn.addEventListener('click', async () => {
+  submitBtn.addEventListener('click', async () => {
     const message = textarea.value.trim();
     if (!message) { textarea.focus(); return; }
 
@@ -550,7 +597,6 @@ submitBtn.addEventListener('click', async () => {
   });
 })();
 
-// ===== Wake Lock (окремий, незалежний блок) =====
 (function initWakeLock() {
   const wakeLockBtn = document.getElementById('wakeLockBtn');
   if (!wakeLockBtn) return;
