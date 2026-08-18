@@ -34,6 +34,8 @@ input[type=number],select,.country-input{width:100%;padding:8px 10px;margin-top:
 .warning{margin-top:12px;padding:12px;background:#ffecec;border:1px solid #f5c2c2;border-radius:6px;color:var(--danger)}
 :root.dark .warning{background:#1e0f0f;border-color:#3d1a1a}
 .warning a{color:#522;text-decoration:underline}
+.warning-approx{margin-top:12px;padding:12px;background:#fffbf0;border:1px solid #ffe4b5;border-radius:6px;color:#8b6f47}
+:root.dark .warning-approx{background:#1a1410;border-color:#6b5c47;color:#d4a574}
 .mode-row{margin:6px 0 12px}
 .mode-block{display:flex;gap:12px;align-items:stretch}
 .mode-cell{flex:1;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;min-height:42px;display:flex;background:transparent}
