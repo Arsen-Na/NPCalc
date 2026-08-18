@@ -36,12 +36,13 @@
         <div class="mode-toggle" id="modeToggleWrap">
           <button id="btnParcel" class="mode-btn" aria-pressed="true" role="button">Посилка</button>
           <button id="btnDocs" class="mode-btn" aria-pressed="false" role="button">Документи</button>
+          <button id="btnWheel" class="mode-btn" aria-pressed="false" role="button">Шина</button>
         </div>
       </div>
     </div>
   </div>
  
-  <div class="row">
+  <div id="parcelInputs" class="row">
     <div>
       <label for="length" id="label-length">Довжина (cm)</label>
       <input id="length" type="number" inputmode="decimal" step="any" min="0" placeholder="40">
@@ -53,6 +54,21 @@
     <div>
       <label for="height" id="label-height">Висота (cm)</label>
       <input id="height" type="number" inputmode="decimal" step="any" min="0" placeholder="20">
+    </div>
+  </div>
+
+  <div id="wheelInputs" class="row" style="display:none">
+    <div>
+      <label for="wheelWidth" id="label-wheel-width">Ширина (мм)</label>
+      <input id="wheelWidth" type="number" inputmode="decimal" step="any" min="0" placeholder="205">
+    </div>
+    <div>
+      <label for="wheelAspect" id="label-wheel-aspect">Висота (%)</label>
+      <input id="wheelAspect" type="number" inputmode="decimal" step="any" min="0" placeholder="55">
+    </div>
+    <div>
+      <label for="wheelDiameter" id="label-wheel-diameter">Діаметр (дюйми)</label>
+      <input id="wheelDiameter" type="number" inputmode="decimal" step="any" min="0" placeholder="16">
     </div>
   </div>
  
@@ -100,6 +116,7 @@
  
   <div id="presenceWarning" class="warning" aria-live="polite" style="display:none"></div>
   <div id="weightBlock" class="warning" aria-live="polite" style="display:none"></div>
+  <div id="tireApproxWarning" class="warning-approx" aria-live="polite" style="display:none"></div>
   <div class="feedback-footer">
   <button class="feedback-btn" id="feedbackBtn" type="button">
     <span id="feedbackBtnLabel">✉ Повідомити про помилку</span>
