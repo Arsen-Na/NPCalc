@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="uk">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Калькулятор ціни</title>
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Калькулятор ціни</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <main class="card">
@@ -118,32 +118,31 @@
   <div id="weightBlock" class="warning" aria-live="polite" style="display:none"></div>
   <div id="tireApproxWarning" class="warning-approx" aria-live="polite" style="display:none"></div>
   <div class="feedback-footer">
-  <button class="feedback-btn" id="feedbackBtn" type="button">
-    <span id="feedbackBtnLabel">✉ Повідомити про помилку</span>
-  </button>
-    
-  <button class="feedback-btn" id="wakeLockBtn" type="button">
-    <span id="wakeLockLabel">🔒 Не давати заснути</span>
-  </button>
-
-</div>
-
-<!-- Feedback modal -->
-<div class="modal-overlay" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
-  <div class="modal-box">
-    <div class="modal-header">
-      <p class="modal-title" id="feedbackModalTitle">Зворотній зв'язок</p>
-      <button class="modal-close" id="feedbackModalClose" aria-label="Закрити">✕</button>
-    </div>
-    <div class="modal-type-row">
-      <button class="mode-btn active" id="fbTypeBug" data-type="bug">🐛 Помилка</button>
-      <button class="mode-btn" id="fbTypeIdea" data-type="idea">💡 Покращення</button>
-    </div>
-    <textarea id="feedbackText" class="feedback-textarea" placeholder="Опишіть проблему або ідею…" rows="4"></textarea>
-    <button class="feedback-submit-btn" id="feedbackSubmit">Надіслати</button>
-    <div id="feedbackStatus" class="feedback-status" style="display:none"></div>
+    <button class="feedback-btn" id="feedbackBtn" type="button">
+      <span id="feedbackBtnLabel">✉ Повідомити про помилку</span>
+    </button>
+      
+    <button class="feedback-btn" id="wakeLockBtn" type="button">
+      <span id="wakeLockLabel">🔒 Не давати заснути</span>
+    </button>
   </div>
-</div>
+
+  <!-- Feedback modal -->
+  <div class="modal-overlay" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <p class="modal-title" id="feedbackModalTitle">Зворотній зв'язок</p>
+        <button class="modal-close" id="feedbackModalClose" aria-label="Закрити">✕</button>
+      </div>
+      <div class="modal-type-row">
+        <button class="mode-btn active" id="fbTypeBug" data-type="bug">🐛 Помилка</button>
+        <button class="mode-btn" id="fbTypeIdea" data-type="idea">💡 Покращення</button>
+      </div>
+      <textarea id="feedbackText" class="feedback-textarea" placeholder="Опишіть проблему або ідею…" rows="4"></textarea>
+      <button class="feedback-submit-btn" id="feedbackSubmit">Надіслати</button>
+      <div id="feedbackStatus" class="feedback-status" style="display:none"></div>
+    </div>
+  </div>
 </main>
  
 <div class="modal-overlay" id="pkgModal" role="dialog" aria-modal="true" aria-labelledby="pkgModalTitle">
@@ -157,6 +156,6 @@
   </div>
 </div>
  
-<script src="./script.js"></script>
+<script src="./script.js" defer></script>
 </body>
 </html>
