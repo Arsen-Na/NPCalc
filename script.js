@@ -62,9 +62,10 @@ async function fetchFxRates(){
     const res = await fetch('https://open.er-api.com/v6/latest/EUR');
     if(!res.ok) throw 0;
     const data = await res.json();
-    if(!data.rates || !data.rates.PLN || !data.rates.UAH) throw 0;
-    FX.EUR_PLN = data.rates.PLN;
-    FX.EUR_UAH = data.rates.UAH;
+    const pln = data.rates && data.rates.PLN, uah = data.rates && data.rates.UAH;
+    if(typeof pln !== 'number' || typeof uah !== 'number' || pln < 3 || pln > 6 || uah < 20 || uah > 100) throw 0;
+    FX.EUR_PLN = pln;
+    FX.EUR_UAH = uah;
     FX.lastFetched = Date.now();
     return FX;
   }catch(e){
@@ -537,10 +538,20 @@ function renderPkgList(query){
     const div = document.createElement('div');
     div.className = 'pkg-item';
     const codes = Array.isArray(p.code) ? p.code : [p.code];
-    const codesHtml = codes.map(c => `<span class="pkg-item-code">${c}</span>`).join('');
     const priceStr = p.price ? ` · +${p.price} zł` : '';
-    div.innerHTML = `<div class="pkg-item-name">${codesHtml}${pkgName(p)}</div>`+
-      `<div class="pkg-item-meta">${p.length} × ${p.width} × ${p.height} cm${priceStr}</div>`;
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'pkg-item-name';
+    codes.forEach(c => {
+      const s = document.createElement('span');
+      s.className = 'pkg-item-code';
+      s.textContent = c;
+      nameDiv.appendChild(s);
+    });
+    nameDiv.appendChild(document.createTextNode(pkgName(p)));
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'pkg-item-meta';
+    metaDiv.textContent = `${p.length} × ${p.width} × ${p.height} cm${priceStr}`;
+    div.append(nameDiv, metaDiv);
     div.addEventListener('click', () => selectPackaging(p));
     frag.appendChild(div);
   });
