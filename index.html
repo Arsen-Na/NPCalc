@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://open.er-api.com https://telegram-bot.nakonechnyarsen.workers.dev; base-uri 'none'; form-action 'none'">
   <title>Калькулятор ціни</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="stylesheet" href="styles.css">
@@ -138,7 +139,7 @@
         <button class="mode-btn active" id="fbTypeBug" data-type="bug">🐛 Помилка</button>
         <button class="mode-btn" id="fbTypeIdea" data-type="idea">💡 Покращення</button>
       </div>
-      <textarea id="feedbackText" class="feedback-textarea" placeholder="Опишіть проблему або ідею…" rows="4"></textarea>
+      <textarea id="feedbackText" class="feedback-textarea" maxlength="1000" placeholder="Опишіть проблему або ідею…" rows="4"></textarea>
       <button class="feedback-submit-btn" id="feedbackSubmit">Надіслати</button>
       <div id="feedbackStatus" class="feedback-status" style="display:none"></div>
     </div>
